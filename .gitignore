@@ -1,4 +1,4 @@
-*.txt
+/*.txt
 _Store
 .idea/shelf
 /android.tests.dependencies

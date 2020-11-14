@@ -6,6 +6,8 @@ fun DependencyHandlerScope.appDependencies() {
     logging()
 
     dagger(version = "2.23.1")
+
+    unitTestDependencies(jupiterVersion = "5.4.2", kotestVersion = "4.3.1")
 }
 
 fun DependencyHandlerScope.logging() {
@@ -18,8 +20,19 @@ fun DependencyHandlerScope.dagger(version: String) {
     kapt("com.google.dagger:dagger-compiler:$version")
 }
 
-fun DependencyHandlerScope.unitTestDependencies() {
+fun DependencyHandlerScope.unitTestDependencies(
+    jupiterVersion: String,
+    kotestVersion: String
+) {
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$jupiterVersion")
 
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$jupiterVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:$jupiterVersion")
+    testImplementation("io.mockk:mockk:1.9.3")
+
+    testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
+    testImplementation("io.kotest:kotest-assertions-core-jvm:$kotestVersion")
+    testImplementation("io.kotest:kotest-property:$kotestVersion")
 }
 
 //TODO: Do something about these weird hacks
@@ -33,4 +46,8 @@ private fun DependencyHandlerScope.kapt(dependency: String) {
 
 private fun DependencyHandlerScope.testImplementation(dependency: String) {
     add("testImplementation", dependency)
+}
+
+private fun DependencyHandlerScope.testRuntimeOnly(dependency: String) {
+    "testRuntimeOnly"(dependency)
 }

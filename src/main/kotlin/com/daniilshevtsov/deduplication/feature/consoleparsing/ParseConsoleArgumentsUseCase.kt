@@ -1,4 +1,4 @@
-package com.daniilshevtsov.deduplication.domain
+package com.daniilshevtsov.deduplication.feature.consoleparsing
 
 import javax.inject.Inject
 
