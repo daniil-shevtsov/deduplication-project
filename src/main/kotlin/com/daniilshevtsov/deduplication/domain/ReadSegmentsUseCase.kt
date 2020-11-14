@@ -10,7 +10,7 @@ class ReadSegmentsUseCase @Inject constructor(
 
     operator fun invoke(inputStream: InputStream) = inputStream.chunkedSequence(chunk = appConfig.chunkSize)
 
-    private fun InputStream.chunkedSequence(chunk: Int): Sequence<ByteArray> {
+    private fun InputStream.chunkedSequence(chunk: Int): Sequence<List<Byte>> {
         val buffer = ByteArray(chunk)
 
         return generateSequence {
@@ -20,7 +20,7 @@ class ReadSegmentsUseCase @Inject constructor(
             } else {
                 close()
                 null
-            }
+            }?.toList()
         }
     }
 

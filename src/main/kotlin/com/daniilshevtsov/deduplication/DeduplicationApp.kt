@@ -24,6 +24,11 @@ class DeduplicationApp {
     @Inject
     lateinit var readSegments: ReadSegmentsUseCase
 
+    sealed class SavedData {
+        data class Chunk(val value: List<Byte>) : SavedData()
+        data class Reference(val value: Int) : SavedData()
+    }
+
     fun start(args: Array<String>) {
         appComponent.inject(this)
 
@@ -34,20 +39,46 @@ class DeduplicationApp {
             return
         }
 
-        val storage = mutableListOf<ByteArray>()
+        val storage = mutableListOf<SavedData>()
+        val indexTable = mutableMapOf<Int, Int>()
         logger.debug { "read from ${parsedArguments.sourceFileName}" }
+
+
         File(parsedArguments.sourceFileName).inputStream().buffered().run {
-            readSegments(inputStream = this).forEach {
-                logger.debug { "save $it" }
-                storage.add(it)
-            }
+            readSegments(inputStream = this)
+                .forEach { chunk ->
+                    val key = chunk.hashCode()
+
+                    if (indexTable.containsKey(key)) {
+                        val index = indexTable[key]!!
+                        storage.add(SavedData.Reference(value = index))
+                        logger.debug { "reuse $chunk with $key at $index" }
+                    } else {
+                        val savedValue = SavedData.Chunk(value = chunk)
+                        storage.add(savedValue)
+                        val index = storage.indexOf(savedValue)
+                        logger.debug { "save $chunk with $key to $index" }
+                        indexTable[key] = index
+                    }
+                }
         }
 
         logger.debug { "write to ${parsedArguments.outputFileName}" }
         File(parsedArguments.outputFileName).outputStream().buffered().run {
-            storage.forEach { byteArray ->
-                logger.debug { "write $byteArray" }
-                write(byteArray)
+            storage.forEach { savedData ->
+                when (savedData) {
+                    is SavedData.Chunk -> {
+                        val value = savedData.value.toByteArray()
+                        logger.debug { "write chunk $value" }
+                        write(value)
+                    }
+                    is SavedData.Reference -> {
+                        val index = savedData.value
+                        val value = (storage[index] as SavedData.Chunk).value.toByteArray()
+                        logger.debug { "write chunk $value from index $index" }
+                        write(value)
+                    }
+                }
             }
             flush()
         }
