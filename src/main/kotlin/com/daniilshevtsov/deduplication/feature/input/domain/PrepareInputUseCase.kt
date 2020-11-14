@@ -1,4 +1,4 @@
-package com.daniilshevtsov.deduplication.feature.input
+package com.daniilshevtsov.deduplication.feature.input.domain
 
 import java.io.File
 import java.io.InputStream

@@ -1,11 +1,11 @@
-package com.daniilshevtsov.deduplication.feature.input
+package com.daniilshevtsov.deduplication.feature.input.domain
 
 import com.daniilshevtsov.deduplication.feature.core.AppConfig
 import com.daniilshevtsov.deduplication.feature.core.Chunk
 import java.io.InputStream
 import javax.inject.Inject
 
-class ReadSegmentsUseCase @Inject constructor(
+class SplitToChunksUseCase @Inject constructor(
     private val appConfig: AppConfig
 ) {
 
