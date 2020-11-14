@@ -43,13 +43,11 @@ class Deduplicator @Inject constructor(
 
     private fun loadFromStorageAndWrite(outputFileName: String) {
         logger.debug { "write to $outputFileName" }
-        val outputStream = prepareOutputStream(fileName = outputFileName)
-        outputStream.run {
+        prepareOutputStream(fileName = outputFileName).run {
             getStorageAsSequence().toList()
                 .forEach { savedData ->
-                    logger.debug { "write $savedData" }
                     val chunk = getResultingChunk(savedData = savedData)
-                    outputStream.write(chunk.value.toByteArray())
+                    write(chunk.value.toByteArray())
                 }
             flush()
         }
