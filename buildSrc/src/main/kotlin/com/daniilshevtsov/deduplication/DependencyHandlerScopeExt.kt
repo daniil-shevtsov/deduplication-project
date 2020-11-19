@@ -7,7 +7,15 @@ fun DependencyHandlerScope.appDependencies() {
 
     dagger(version = "2.23.1")
 
-    unitTestDependencies(jupiterVersion = "5.4.2", kotestVersion = "4.3.1")
+    database(
+        sqliteVersion = "3.30.1",
+        exposedVersion = "0.28.1"
+    )
+
+    unitTestDependencies(
+        jupiterVersion = "5.4.2",
+        kotestVersion = "4.3.1"
+    )
 }
 
 fun DependencyHandlerScope.logging() {
@@ -18,6 +26,17 @@ fun DependencyHandlerScope.logging() {
 fun DependencyHandlerScope.dagger(version: String) {
     implementation("com.google.dagger:dagger:$version")
     kapt("com.google.dagger:dagger-compiler:$version")
+}
+
+fun DependencyHandlerScope.database(
+    sqliteVersion: String,
+    exposedVersion: String
+) {
+    implementation("org.xerial:sqlite-jdbc:$sqliteVersion")
+
+    implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
 }
 
 fun DependencyHandlerScope.unitTestDependencies(

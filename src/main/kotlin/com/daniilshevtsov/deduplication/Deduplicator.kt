@@ -8,6 +8,10 @@ import com.daniilshevtsov.deduplication.feature.output.PrepareOutputUseCase
 import com.daniilshevtsov.deduplication.feature.storage.domain.GetResultingChunkUseCase
 import com.daniilshevtsov.deduplication.feature.storage.domain.GetStorageAsSequenceUseCase
 import mu.KLogger
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.transactions.TransactionManager
+import org.jetbrains.exposed.sql.transactions.transaction
+import java.sql.Connection
 import javax.inject.Inject
 
 class Deduplicator @Inject constructor(
@@ -26,6 +30,26 @@ class Deduplicator @Inject constructor(
         } catch (exception: Exception) {
             println(exception.message)
             return
+        }
+
+        val db = Database.connect(
+            url = "jdbc:sqlite:./data.db",
+            driver = "org.sqlite.JDBC"
+        )
+        TransactionManager.manager.defaultIsolationLevel = Connection.TRANSACTION_SERIALIZABLE
+
+        transaction {
+            addLogger(StdOutSqlLogger)
+            SchemaUtils.create(ReferenceTable)
+
+            val id = ReferenceTable.insert {
+                it[fullName] = "kek"
+                it[lastName] = "kekovich"
+            } get ReferenceTable.id
+            ReferenceTable.insert {
+                it[fullName] = "lol"
+                it[lastName] = "lolovich"
+            }
         }
 
         readAndStore(sourceFileName = parsedArguments.sourceFileName)

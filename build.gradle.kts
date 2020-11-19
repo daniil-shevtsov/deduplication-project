@@ -8,6 +8,7 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven(url = "https://dl.bintray.com/kotlin/exposed/")
 }
 
 tasks.withType<Test> {
