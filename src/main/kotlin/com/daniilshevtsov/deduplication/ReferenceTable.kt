@@ -1,11 +1,12 @@
 package com.daniilshevtsov.deduplication
 
-import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.dao.id.IntIdTable
 
 
-object ReferenceTable : Table() {
+object ReferenceTable : IntIdTable() {
     override val primaryKey by lazy { PrimaryKey(id) }
-    val id = integer("id").autoIncrement()
-    val fullName = varchar("name", 50)
-    val lastName = varchar("last_name", 50)
+    val segmentHash = integer("segment_hash")
+    val fileName = varchar("file_name", 50)
+    val segmentPosition = long("segment_position")
+    val segmentCount = long("segment_count")
 }
