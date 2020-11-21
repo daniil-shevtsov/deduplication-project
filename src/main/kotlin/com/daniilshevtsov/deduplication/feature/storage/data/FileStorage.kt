@@ -19,13 +19,9 @@ class FileStorage @Inject constructor(
         val reference = with(file) {
             seek(length())
             write("value:".toByteArray())
-            val payload = chunk.value.map { byte ->
-                when (byte.toChar()) {
-                    LINE_BREAK -> LINE_BREAK_STAND_IN.toByte()
-                    CARRIAGE_RETURN -> CARRIAGE_RETURN_STAND_IN.toByte()
-                    else -> byte
-                }
-            }
+            val payload = chunk.value.toByteArray().toString(Charsets.UTF_8)
+                .replace(LINE_BREAK, LINE_BREAK_STAND_IN)
+                .replace(CARRIAGE_RETURN, CARRIAGE_RETURN_STAND_IN)
 
             write(payload.toByteArray())
             write("\n".toByteArray())
@@ -44,7 +40,7 @@ class FileStorage @Inject constructor(
         val file = RandomAccessFile(reference.pageId, "r")
         val chunk = with(file) {
             seek(reference.segmentPosition)
-            val line = readLine()
+            val line = readLine().toByteArray(Charsets.ISO_8859_1).toString(Charsets.UTF_8)
             val payload = line.substringAfter("reference:")
             payload.replace(LINE_BREAK_STAND_IN, LINE_BREAK)
             payload.replace(CARRIAGE_RETURN_STAND_IN, CARRIAGE_RETURN)

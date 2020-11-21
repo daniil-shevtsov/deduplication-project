@@ -12,6 +12,14 @@ class ByteTest {
     }
 
     @Test
+    fun `bytearray to string`() {
+        val text = "lol kek\r\ncheburek"
+        val textByteArray = text.toByteArray(Charsets.UTF_8)
+        val utfText = textByteArray.toString(Charsets.UTF_8)
+        val finalText = text.replace('˪', 'l')
+    }
+
+    @Test
     fun `kek`() {
         val file = RandomAccessFile(STORAGE_FILE_NAME, "rw")
         with(file) {
