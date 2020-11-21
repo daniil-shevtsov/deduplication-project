@@ -18,18 +18,30 @@ class DeduplicationAppTest {
     fun `when program launched - then writes correct output file`() {
         deduplicationApp.start(args = arrayOf(INPUT_PATH, ACTUAL_OUTPUT_PATH))
 
-        assertOutputFile()
+        assertOutputFile(expectedOutputPath = EXPECTED_OUTPUT_PATH)
     }
 
-    private fun assertOutputFile() {
-        val expected = File(EXPECTED_OUTPUT_PATH).readLines()
+    @Test
+    fun `when program launched with unique input - then writes correct output file`() {
+        deduplicationApp.start(args = arrayOf(UNIQUE_INPUT_PATH, ACTUAL_OUTPUT_PATH))
+
+        assertOutputFile(expectedOutputPath = UNIQUE_EXPECTED_OUTPUT_PATH)
+    }
+
+    private fun assertOutputFile(expectedOutputPath: String) {
+        val expected = File(expectedOutputPath).readLines()
         val actual = File(ACTUAL_OUTPUT_PATH).readLines()
         actual shouldBe expected
     }
 
     private companion object {
-        val INPUT_PATH: String = DeduplicationAppTest::class.java.getResource("input.txt").path
-        val EXPECTED_OUTPUT_PATH: String = DeduplicationAppTest::class.java.getResource("expected_output.txt").path
+        val INPUT_PATH: String = DeduplicationAppTest::class.java.getResource("app_input.txt").path
+        val EXPECTED_OUTPUT_PATH: String = DeduplicationAppTest::class.java.getResource("app_expected_output.txt").path
+
+        val UNIQUE_INPUT_PATH: String = DeduplicationAppTest::class.java.getResource("app_unique_input.txt").path
+        val UNIQUE_EXPECTED_OUTPUT_PATH: String =
+            DeduplicationAppTest::class.java.getResource("app_unique_expected_output.txt").path
+
         const val ACTUAL_OUTPUT_PATH = "output.txt"
     }
 }

@@ -19,7 +19,15 @@ class FileStorage @Inject constructor(
         val reference = with(file) {
             seek(length())
             write("value:".toByteArray())
-            write(chunk.value.toByteArray())
+            val payload = chunk.value.map { byte ->
+                when (byte.toChar()) {
+                    LINE_BREAK -> LINE_BREAK_STAND_IN.toByte()
+                    CARRIAGE_RETURN -> CARRIAGE_RETURN_STAND_IN.toByte()
+                    else -> byte
+                }
+            }
+
+            write(payload.toByteArray())
             write("\n".toByteArray())
 
             Reference(
@@ -38,6 +46,8 @@ class FileStorage @Inject constructor(
             seek(reference.segmentPosition)
             val line = readLine()
             val payload = line.substringAfter("reference:")
+            payload.replace(LINE_BREAK_STAND_IN, LINE_BREAK)
+            payload.replace(CARRIAGE_RETURN_STAND_IN, CARRIAGE_RETURN)
             val lineBytes = payload.toByteArray().toList()
 
             Chunk(value = lineBytes)
@@ -59,5 +69,12 @@ class FileStorage @Inject constructor(
 
     override fun readAsSequence(): Sequence<String> {
         return File(storageFileName).bufferedReader().lineSequence()
+    }
+
+    private companion object {
+        const val LINE_BREAK = '\n'
+        const val CARRIAGE_RETURN = '\r'
+        const val LINE_BREAK_STAND_IN = '˫'
+        const val CARRIAGE_RETURN_STAND_IN = '˪'
     }
 }

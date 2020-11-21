@@ -33,7 +33,7 @@ class StorageRepositoryImpl @Inject constructor(
             line.startsWith("value:") -> {
                 SavedData.Value(chunk = Chunk(value = line.substringAfter("value:").toByteArray().toList()))
             }
-            else -> throw IllegalStateException("not value nor reference")
+            else -> throw IllegalStateException("line >$line< is not a value nor a reference")
         }
 
     }
