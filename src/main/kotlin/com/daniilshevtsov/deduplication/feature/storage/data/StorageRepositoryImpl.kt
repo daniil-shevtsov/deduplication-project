@@ -8,26 +8,34 @@ import javax.inject.Inject
 
 @ApplicationScope
 class StorageRepositoryImpl @Inject constructor(
-
+    private val storageApi: StorageApi
 ) : StorageRepository {
 
-    private val storage = mutableListOf<SavedData>()
+//    private val storage = mutableListOf<SavedData>()
 
     override fun saveChunk(chunk: Chunk): Reference {
-        val savedValue = SavedData.Value(chunk = chunk)
-        storage.add(savedValue)
-
-        return Reference(index = storage.indexOf(savedValue))
+        return storageApi.saveChunkByValue(chunk = chunk)
     }
 
     override fun getByReference(reference: Reference): Chunk {
-        return (storage[reference.index] as SavedData.Value).chunk
+        return storageApi.getByReference(reference = reference)
     }
 
     override fun saveReference(reference: Reference) {
-        storage.add(SavedData.TableReference(reference = reference))
+        storageApi.saveChunkByReference(reference = reference)
     }
 
-    override fun readAsSequence(): Sequence<SavedData> = storage.asSequence()
+    override fun readAsSequence(): Sequence<SavedData> = storageApi.readAsSequence().map { line ->
+        when {
+            line.startsWith("reference:") -> {
+                SavedData.TableReference(referenceId = line.substringAfter("reference:").toInt())
+            }
+            line.startsWith("value:") -> {
+                SavedData.Value(chunk = Chunk(value = line.substringAfter("value:").toByteArray().toList()))
+            }
+            else -> throw IllegalStateException("not value nor reference")
+        }
+
+    }
 
 }

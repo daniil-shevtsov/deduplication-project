@@ -17,14 +17,20 @@ class IndexTableRepositoryImpl @Inject constructor(
         dataStoreApi.saveReference(
             ReferenceEntity(
                 segmentHash = key,
-                fileName = "",
-                segmentPosition = reference.index.toLong(),
+                fileName = reference.pageId,
+                segmentPosition = reference.segmentPosition,
                 segmentCount = 0
             )
         )
     }
 
     override fun get(key: Int): Reference? {
-        return dataStoreApi.findReferenceByHash(hash = key)?.segmentPosition?.toInt()?.let { Reference(index = it) }
+        return dataStoreApi.findReferenceByHash(hash = key)?.let { referenceEntity ->
+            Reference(
+                id = referenceEntity.segmentHash,
+                pageId = referenceEntity.fileName,
+                segmentPosition = referenceEntity.segmentPosition
+            )
+        }
     }
 }
