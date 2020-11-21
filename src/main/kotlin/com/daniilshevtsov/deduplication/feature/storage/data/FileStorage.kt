@@ -42,8 +42,8 @@ class FileStorage @Inject constructor(
             seek(reference.segmentPosition)
             val line = readLine().toByteArray(Charsets.ISO_8859_1).toString(Charsets.UTF_8)
             val payload = line.substringAfter("reference:")
-            payload.replace(LINE_BREAK_STAND_IN, LINE_BREAK)
-            payload.replace(CARRIAGE_RETURN_STAND_IN, CARRIAGE_RETURN)
+                .replace(LINE_BREAK_STAND_IN, LINE_BREAK)
+                .replace(CARRIAGE_RETURN_STAND_IN, CARRIAGE_RETURN)
             val lineBytes = payload.toByteArray().toList()
 
             Chunk(value = lineBytes)
@@ -64,7 +64,10 @@ class FileStorage @Inject constructor(
     }
 
     override fun readAsSequence(): Sequence<String> {
-        return File(storageFileName).bufferedReader().lineSequence()
+        return File(storageFileName).bufferedReader().lineSequence().map {
+            it.replace(LINE_BREAK_STAND_IN, LINE_BREAK)
+                .replace(CARRIAGE_RETURN_STAND_IN, CARRIAGE_RETURN)
+        }
     }
 
     private companion object {
