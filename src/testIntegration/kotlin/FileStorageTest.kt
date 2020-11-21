@@ -1,5 +1,6 @@
 import com.daniilshevtsov.deduplication.feature.core.AppConfig
 import com.daniilshevtsov.deduplication.feature.core.Chunk
+import com.daniilshevtsov.deduplication.feature.core.Reference
 import com.daniilshevtsov.deduplication.feature.storage.data.FileStorage
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.AfterEach
@@ -24,7 +25,7 @@ class FileStorageTest {
     }
 
     @Test
-    fun `when writing - everything okay`() {
+    fun `when writing chunk - it is written correctly`() {
         fileStorage.saveChunkByValue(chunk = Chunk(value = "lol".toByteArray().toList()))
 
         val expected = File(EXPECTED_CHUNK_FILE_PATH).readLines()
@@ -32,9 +33,20 @@ class FileStorageTest {
         actual shouldBe expected
     }
 
+    @Test
+    fun `when writing reference - it is written correctly`() {
+        fileStorage.saveChunkByReference(reference = Reference(id = 5, pageId = "kek.txt", segmentPosition = 0))
+
+        val expected = File(EXPECTED_REFERENCE_FILE_PATH).readLines()
+        val actual = File(STORAGE_FILE_NAME).readLines()
+        actual shouldBe expected
+    }
+
     private companion object {
         private val EXPECTED_CHUNK_FILE_PATH =
             DeduplicationAppTest::class.java.getResource("file_storage_expected_chunk.txt").path
+        private val EXPECTED_REFERENCE_FILE_PATH =
+            DeduplicationAppTest::class.java.getResource("file_storage_expected_reference.txt").path
         private const val STORAGE_FILE_NAME = "test_storage.txt"
     }
 

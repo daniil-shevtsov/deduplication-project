@@ -15,33 +15,42 @@ class FileStorage @Inject constructor(
     private val storageFileName = appConfig.storageFileName
 
     override fun saveChunkByValue(chunk: Chunk): Reference {
-        RandomAccessFile(storageFileName, "rw").apply {
+        val file = RandomAccessFile(storageFileName, "rw")
+        val reference = with(file) {
             //seek(length())
             write("value:".toByteArray())
             write(chunk.value.toByteArray())
-            return Reference(
+
+            Reference(
                 id = chunk.hashCode(),
                 pageId = storageFileName,
                 segmentPosition = length()
             )
         }
+        file.close()
+        return reference
     }
 
     override fun getByReference(reference: Reference): Chunk {
-        RandomAccessFile(reference.pageId, "r").apply {
+        val file = RandomAccessFile(reference.pageId, "r")
+        val chunk = with(file) {
             seek(reference.segmentPosition)
             val line = readLine()
             val payload = line.substringAfter("reference:")
             val lineBytes = payload.toByteArray().toList()
-            return Chunk(value = lineBytes)
+            Chunk(value = lineBytes)
         }
+        file.close()
+        return chunk
     }
 
     override fun saveChunkByReference(reference: Reference) {
         RandomAccessFile(storageFileName, "rw").apply {
             seek(length())
-            writeUTF("reference:")
-            write(reference.id)
+            write("reference:".toByteArray())
+            write(reference.id.toString().toByteArray())
+
+            close()
         }
     }
 
