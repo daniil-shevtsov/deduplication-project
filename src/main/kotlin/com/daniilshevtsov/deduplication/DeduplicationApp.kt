@@ -9,7 +9,7 @@ class DeduplicationApp {
     private val appComponent: AppComponent by lazy {
         DaggerAppComponent.factory()
             .create(
-                appConfig = AppConfig(chunkSize = 4, storageFileName = "storage.txt")
+                appConfig = AppConfig(chunkSize = 4, storageDirectoryName = "storage", storageFileName = "storage.txt")
             )
     }
 

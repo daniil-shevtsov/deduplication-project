@@ -8,11 +8,19 @@ import java.io.RandomAccessFile
 import javax.inject.Inject
 
 class FileStorage @Inject constructor(
-    private val appConfig: AppConfig
+    appConfig: AppConfig
 ) : StorageApi {
 
     //TODO: Use different file names for different files
-    private val storageFileName = appConfig.storageFileName
+    private val storageFileName = "${appConfig.storageDirectoryName}/${appConfig.storageFileName}"
+
+    init {
+        File(appConfig.storageDirectoryName).apply {
+            if (!exists()) {
+                mkdirs()
+            }
+        }
+    }
 
     override fun saveChunkByValue(chunk: Chunk): Reference {
         val file = RandomAccessFile(storageFileName, "rw")
@@ -71,6 +79,8 @@ class FileStorage @Inject constructor(
     }
 
     private companion object {
+        const val STORAGE_DIRECTORY_NAME = "storage"
+
         const val LINE_BREAK = '\n'
         const val CARRIAGE_RETURN = '\r'
         const val LINE_BREAK_STAND_IN = '˫'
