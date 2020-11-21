@@ -42,11 +42,24 @@ class FileStorageTest {
         actual shouldBe expected
     }
 
+    @Test
+    fun `when writing value and reference - they are written correctly`() {
+        fileStorage.saveChunkByValue(chunk = Chunk(value = "lol".toByteArray().toList()))
+        fileStorage.saveChunkByReference(reference = Reference(id = 5, pageId = "kek.txt", segmentPosition = 0))
+        fileStorage.saveChunkByValue(chunk = Chunk(value = "kek".toByteArray().toList()))
+
+        val expected = File(EXPECTED_VALUE_AND_REFERENCE_FILE_PATH).readLines()
+        val actual = File(STORAGE_FILE_NAME).readLines()
+        actual shouldBe expected
+    }
+
     private companion object {
         private val EXPECTED_CHUNK_FILE_PATH =
-            DeduplicationAppTest::class.java.getResource("file_storage_expected_chunk.txt").path
+            FileStorageTest::class.java.getResource("file_storage_expected_chunk.txt").path
         private val EXPECTED_REFERENCE_FILE_PATH =
-            DeduplicationAppTest::class.java.getResource("file_storage_expected_reference.txt").path
+            FileStorageTest::class.java.getResource("file_storage_expected_reference.txt").path
+        private val EXPECTED_VALUE_AND_REFERENCE_FILE_PATH =
+            FileStorageTest::class.java.getResource("file_storage_expected_value_and_reference.txt").path
         private const val STORAGE_FILE_NAME = "test_storage.txt"
     }
 

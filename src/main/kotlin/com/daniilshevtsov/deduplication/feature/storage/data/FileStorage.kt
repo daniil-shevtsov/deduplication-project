@@ -17,9 +17,10 @@ class FileStorage @Inject constructor(
     override fun saveChunkByValue(chunk: Chunk): Reference {
         val file = RandomAccessFile(storageFileName, "rw")
         val reference = with(file) {
-            //seek(length())
+            seek(length())
             write("value:".toByteArray())
             write(chunk.value.toByteArray())
+            write("\n".toByteArray())
 
             Reference(
                 id = chunk.hashCode(),
@@ -38,6 +39,7 @@ class FileStorage @Inject constructor(
             val line = readLine()
             val payload = line.substringAfter("reference:")
             val lineBytes = payload.toByteArray().toList()
+
             Chunk(value = lineBytes)
         }
         file.close()
@@ -49,6 +51,7 @@ class FileStorage @Inject constructor(
             seek(length())
             write("reference:".toByteArray())
             write(reference.id.toString().toByteArray())
+            write("\n".toByteArray())
 
             close()
         }
