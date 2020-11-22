@@ -37,13 +37,16 @@ class DeduplicationAppTest {
         )
     }
 
-//    @Test
-//    fun `when program launched with unique input - then writes correct output file`() {
-//        deduplicationApp.start(args = arrayOf(STORE_KEY, UNIQUE_INPUT_PATH))
-//        deduplicationApp.start(args = arrayOf(READ_KEY, UNIQUE_INPUT_PATH, ACTUAL_OUTPUT_PATH))
-//
-//        assertOutputFile(expectedOutputPath = UNIQUE_EXPECTED_OUTPUT_PATH)
-//    }
+    @Test
+    fun `when program launched with unique input - then writes correct output file`() {
+        deduplicationApp.start(args = arrayOf(STORE_KEY, UNIQUE_INPUT_PATH))
+        deduplicationApp.start(args = arrayOf(READ_KEY, UNIQUE_INPUT_PATH, ACTUAL_OUTPUT_PATH))
+
+        assertOutputFile(
+            actualOutputPath = ACTUAL_OUTPUT_PATH,
+            expectedOutputPath = UNIQUE_EXPECTED_OUTPUT_PATH
+        )
+    }
 
     private fun assertOutputFile(
         actualOutputPath: String,
