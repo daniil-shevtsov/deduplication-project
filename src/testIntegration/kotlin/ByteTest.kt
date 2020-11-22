@@ -8,7 +8,7 @@ import java.io.RandomAccessFile
 class ByteTest {
     @AfterEach
     fun onTeardown() {
-//        File(STORAGE_FILE_NAME).delete()
+        File(STORAGE_FILE_NAME).delete()
     }
 
     @Test

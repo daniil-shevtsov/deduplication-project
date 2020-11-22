@@ -9,4 +9,6 @@ sealed class ConsoleArguments {
         val outputFileName: String
     ) : ConsoleArguments()
 
+    object Clean : ConsoleArguments()
+
 }

@@ -92,4 +92,15 @@ internal class ParseConsoleArgumentsUseCaseTest {
         expected shouldBe actual
     }
 
+    @Test
+    fun `when clean - then parses correctly`() {
+        val expected = ConsoleArguments.Clean
+
+        val rawArguments = arrayOf("-c")
+
+        val actual = parseConsoleArguments(rawArguments = rawArguments)
+
+        expected shouldBe actual
+    }
+
 }

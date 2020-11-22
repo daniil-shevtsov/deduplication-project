@@ -38,6 +38,7 @@ class Deduplicator @Inject constructor(
                 sourceFileName = parsedArguments.sourceFileName,
                 outputFileName = parsedArguments.outputFileName
             )
+            is ConsoleArguments.Clean -> clean()
         }
     }
 
@@ -56,8 +57,6 @@ class Deduplicator @Inject constructor(
         outputFileName: String
     ) {
         logger.debug { "write to $outputFileName" }
-        //TODO: Come up with some sane strategy
-//        clean(outputFileName = outputFileName)
 
         prepareOutputStream(fileName = outputFileName).run {
             getStorageAsSequence(pageId = sourceFileName).toList()
@@ -69,9 +68,16 @@ class Deduplicator @Inject constructor(
         }
     }
 
-    private fun clean(outputFileName: String) {
-        File(outputFileName).delete()
-//        File("data.db").delete()
+    private fun clean() {
+        File("data.db").delete()
+
+        //TODO: Use dynamic storage name
+        File("storage").deleteRecursively()
+
+        //TODO: store source and output in special directories
+        File(".").listFiles()
+            ?.filter { it.name.endsWith(".txt") }
+            ?.forEach { it.delete() }
     }
 
 

@@ -5,11 +5,12 @@ import javax.inject.Inject
 class ParseConsoleArgumentsUseCase @Inject constructor() {
 
     operator fun invoke(rawArguments: Array<String>): ConsoleArguments {
-        require(rawArguments.isNotEmpty()) { "Requires one key: $STORE_KEY_WORD for storing or $READ_KEY_WORD for reading" }
+        require(rawArguments.isNotEmpty()) { "Requires one key: $STORE_KEY_WORD for storing, $READ_KEY_WORD for reading or $CLEAN_KEY_WORD to clean" }
 
         return when (val key = rawArguments.first()) {
             in STORE_KEY_WORD -> parseStoreArguments(rawArguments.drop(1))
             in READ_KEY_WORD -> parseReadArguments(rawArguments.drop(1))
+            in CLEAN_KEY_WORD -> parseCleanArguments()
             else -> throw IllegalArgumentException("unknown key argument: $key")
         }
     }
@@ -31,7 +32,10 @@ class ParseConsoleArgumentsUseCase @Inject constructor() {
         )
     }
 
+    private fun parseCleanArguments(): ConsoleArguments = ConsoleArguments.Clean
+
     private companion object {
+        val CLEAN_KEY_WORD = listOf("-c", "--clean")
         val STORE_KEY_WORD = listOf("-s", "--store")
         val READ_KEY_WORD = listOf("-r", "--read")
 
