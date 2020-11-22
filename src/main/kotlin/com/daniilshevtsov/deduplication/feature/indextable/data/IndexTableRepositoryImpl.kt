@@ -13,7 +13,7 @@ class IndexTableRepositoryImpl @Inject constructor(
     override fun checkContains(key: Int): Boolean = dataStoreApi.findReferenceByHash(hash = key) != null
 
     //TODO: Fill fields correctly
-    override fun save(key: Int, reference: Reference) {
+    override suspend fun save(key: Int, reference: Reference) {
         dataStoreApi.saveReference(
             ReferenceEntity(
                 segmentHash = key,

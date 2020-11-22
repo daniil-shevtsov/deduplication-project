@@ -5,5 +5,5 @@ interface DataStoreApi {
 
     fun getReference(id: Int): ReferenceEntity?
 
-    fun saveReference(referenceEntity: ReferenceEntity)
+    suspend fun saveReference(referenceEntity: ReferenceEntity)
 }

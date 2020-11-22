@@ -6,7 +6,7 @@ import javax.inject.Inject
 class SaveReferenceUseCase @Inject constructor(
     private val indexTableRepository: IndexTableRepository
 ) {
-    operator fun invoke(key: Int, reference: Reference) {
+    suspend operator fun invoke(key: Int, reference: Reference) {
         indexTableRepository.save(key = key, reference = reference)
     }
 }

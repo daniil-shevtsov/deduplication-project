@@ -7,7 +7,9 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.TransactionManager
+import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.sqlite.SQLiteConfig
 import java.sql.Connection
 import javax.inject.Inject
 
@@ -23,7 +25,14 @@ class DataStore @Inject constructor(
     private fun setupDatabase() {
         val db = Database.connect(
             url = "jdbc:sqlite:./data.db",
-            driver = "org.sqlite.JDBC"
+            driver = "org.sqlite.JDBC",
+            setupConnection = {
+                SQLiteConfig().apply {
+                    setSharedCache(true)
+                    setJournalMode(SQLiteConfig.JournalMode.WAL)
+                    apply(it)
+                }
+            }
         )
         TransactionManager.manager.defaultIsolationLevel = Connection.TRANSACTION_SERIALIZABLE
 
@@ -44,8 +53,8 @@ class DataStore @Inject constructor(
         ReferenceExposedEntity.findById(id)?.toEntity()
     }
 
-    override fun saveReference(referenceEntity: ReferenceEntity) {
-        transaction {
+    override suspend fun saveReference(referenceEntity: ReferenceEntity) {
+        newSuspendedTransaction {
             referenceEntity.toExposed()
         }
     }
