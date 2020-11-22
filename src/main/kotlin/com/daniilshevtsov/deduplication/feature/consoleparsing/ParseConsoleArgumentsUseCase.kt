@@ -23,7 +23,7 @@ class ParseConsoleArgumentsUseCase @Inject constructor() {
     }
 
     private fun parseReadArguments(rawArguments: List<String>): ConsoleArguments.Read {
-        require(rawArguments.size == READ_ARGUMENTS_COUNT) { "Reading requires one argument: output file name" }
+        require(rawArguments.size == READ_ARGUMENTS_COUNT) { "Reading requires two arguments: source file name and output file name" }
 
         return ConsoleArguments.Read(
             sourceFileName = rawArguments.first(),

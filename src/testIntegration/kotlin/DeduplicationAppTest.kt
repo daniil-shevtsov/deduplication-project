@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.io.File
-import java.nio.file.Paths
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DeduplicationAppTest {
@@ -18,7 +17,7 @@ class DeduplicationAppTest {
     @Test
     fun `when program launched - then writes correct output file`() {
         deduplicationApp.start(args = arrayOf(STORE_KEY, INPUT_PATH))
-        deduplicationApp.start(args = arrayOf(READ_KEY, EXPECTED_OUTPUT_PATH))
+        deduplicationApp.start(args = arrayOf(READ_KEY, INPUT_PATH, EXPECTED_OUTPUT_PATH))
 
         assertOutputFile(expectedOutputPath = EXPECTED_OUTPUT_PATH)
     }
@@ -26,7 +25,7 @@ class DeduplicationAppTest {
     @Test
     fun `when program launched with unique input - then writes correct output file`() {
         deduplicationApp.start(args = arrayOf(STORE_KEY, UNIQUE_INPUT_PATH))
-        deduplicationApp.start(args = arrayOf(READ_KEY, ACTUAL_OUTPUT_PATH))
+        deduplicationApp.start(args = arrayOf(READ_KEY, UNIQUE_INPUT_PATH, ACTUAL_OUTPUT_PATH))
 
         assertOutputFile(expectedOutputPath = UNIQUE_EXPECTED_OUTPUT_PATH)
     }
@@ -44,14 +43,15 @@ class DeduplicationAppTest {
         val INPUT_PATH: String = getResourcePath("app_input.txt")
         val EXPECTED_OUTPUT_PATH: String = DeduplicationAppTest::class.java.getResource("app_expected_output.txt").path
 
-        val UNIQUE_INPUT_PATH: String = DeduplicationAppTest::class.java.getResource("app_unique_input.txt").path
+        val UNIQUE_INPUT_PATH: String = getResourcePath("app_unique_input.txt")
         val UNIQUE_EXPECTED_OUTPUT_PATH: String =
             DeduplicationAppTest::class.java.getResource("app_unique_expected_output.txt").path
 
         const val ACTUAL_OUTPUT_PATH = "output.txt"
 
-        private fun getResourcePath(fileName: String) =
+        private fun getResourcePath(fileName: String) = DeduplicationAppTest::class.java.getResource(fileName).path.drop(1)
 //            File(DeduplicationAppTest::class.java.getResource(fileName).path).absolutePath
-            Paths.get(DeduplicationAppTest::class.java.getResource(fileName).toURI()).toString()
+//        Paths.get(DeduplicationAppTest::
+//        class.java.getResource(fileName).toURI()).toString()
     }
 }
