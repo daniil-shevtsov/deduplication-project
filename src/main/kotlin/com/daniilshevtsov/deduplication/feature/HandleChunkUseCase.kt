@@ -32,6 +32,7 @@ class HandleChunkUseCase @Inject constructor(
             }
         } else {
             val reference = saveChunkToStorage(chunk = chunk)
+
             GlobalScope.launch {
                 saveReferenceAsync(key = key, reference = reference)
             }
