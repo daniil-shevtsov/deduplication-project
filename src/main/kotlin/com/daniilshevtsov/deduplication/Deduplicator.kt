@@ -10,6 +10,7 @@ import com.daniilshevtsov.deduplication.feature.storage.domain.GetResultingChunk
 import com.daniilshevtsov.deduplication.feature.storage.domain.GetStorageAsSequenceUseCase
 import com.daniilshevtsov.deduplication.feature.storage.domain.SetCurrentPageIdUseCase
 import mu.KLogger
+import java.io.File
 import javax.inject.Inject
 
 class Deduplicator @Inject constructor(
@@ -42,6 +43,7 @@ class Deduplicator @Inject constructor(
 
     private fun readAndStore(sourceFileName: String) {
         logger.debug { "read from $sourceFileName" }
+
         prepareInputStream(fileName = sourceFileName).run {
             setCurrentPageIdUseCase(pageId = sourceFileName)
             splitToChunks(inputStream = this)
@@ -54,6 +56,9 @@ class Deduplicator @Inject constructor(
         outputFileName: String
     ) {
         logger.debug { "write to $outputFileName" }
+        //TODO: Come up with some sane strategy
+//        clean(outputFileName = outputFileName)
+
         prepareOutputStream(fileName = outputFileName).run {
             getStorageAsSequence(pageId = sourceFileName).toList()
                 .forEach { savedData ->
@@ -62,6 +67,11 @@ class Deduplicator @Inject constructor(
                 }
             flush()
         }
+    }
+
+    private fun clean(outputFileName: String) {
+        File(outputFileName).delete()
+//        File("data.db").delete()
     }
 
 

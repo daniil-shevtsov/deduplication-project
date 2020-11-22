@@ -89,8 +89,8 @@ class FileStorage @Inject constructor(
     }
 
     private fun getFullPath(fileName: String): String {
-        val filePath = Paths.get(fileName)
-        val storageDirectoryPath = Paths.get(appConfig.storageDirectoryName)
+        val filePath = Paths.get(fileName).fileName
+        val storageDirectoryPath = Paths.get(appConfig.storageDirectoryName).toAbsolutePath()
         val mergedPath = storageDirectoryPath.resolve(filePath)
         return mergedPath.normalize().toString()
     }
