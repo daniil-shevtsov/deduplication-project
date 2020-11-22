@@ -19,27 +19,69 @@ internal class ParseConsoleArgumentsUseCaseTest {
     }
 
     @Test
-    fun `when invalid number of arguments - then throws`() {
-        val rawArguments = Array(REQUIRED_NUMBER_OF_ARGUMENTS + 1) { "lol" }
+    fun `when invalid number of arguments for storing - then throws`() {
+        val rawArguments = arrayOf("--store", "a", "b")
         shouldThrow<IllegalArgumentException> { parseConsoleArguments(rawArguments = rawArguments) }
     }
 
     @Test
-    fun `when valid number of arguments - then parses correctly`() {
-        val expected = ConsoleArguments(
-            sourceFileName = "lol.txt",
-            outputFileName = "kek.txt"
+    fun `when invalid number of arguments for reading - then throws`() {
+        val rawArguments = arrayOf("--read", "a", "b")
+        shouldThrow<IllegalArgumentException> { parseConsoleArguments(rawArguments = rawArguments) }
+    }
+
+    @Test
+    fun `when invalid key - then throws`() {
+        val rawArguments = arrayOf("x", "a")
+        shouldThrow<IllegalArgumentException> { parseConsoleArguments(rawArguments = rawArguments) }
+    }
+
+    @Test
+    fun `when storing with full key - then parses correctly`() {
+        val expected = ConsoleArguments.Store(
+            sourceFileName = "lol.txt"
         )
-        val rawArguments = arrayOf("lol.txt", "kek.txt")
+        val rawArguments = arrayOf("--store", "lol.txt")
 
         val actual = parseConsoleArguments(rawArguments = rawArguments)
 
         expected shouldBe actual
     }
 
-    private companion object {
-        const val REQUIRED_NUMBER_OF_ARGUMENTS = 2
+    @Test
+    fun `when storing with short key - then parses correctly`() {
+        val expected = ConsoleArguments.Store(
+            sourceFileName = "lol.txt"
+        )
+        val rawArguments = arrayOf("-s", "lol.txt")
 
+        val actual = parseConsoleArguments(rawArguments = rawArguments)
+
+        expected shouldBe actual
+    }
+
+    @Test
+    fun `when reading with full key - then parses correctly`() {
+        val expected = ConsoleArguments.Read(
+            outputFileName = "lol.txt"
+        )
+        val rawArguments = arrayOf("--read", "lol.txt")
+
+        val actual = parseConsoleArguments(rawArguments = rawArguments)
+
+        expected shouldBe actual
+    }
+
+    @Test
+    fun `when reading with short key - then parses correctly`() {
+        val expected = ConsoleArguments.Read(
+            outputFileName = "lol.txt"
+        )
+        val rawArguments = arrayOf("-r", "lol.txt")
+
+        val actual = parseConsoleArguments(rawArguments = rawArguments)
+
+        expected shouldBe actual
     }
 
 }

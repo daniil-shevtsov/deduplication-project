@@ -1,6 +1,7 @@
 package com.daniilshevtsov.deduplication.feature.consoleparsing
 
-data class ConsoleArguments(
-    val sourceFileName: String,
-    val outputFileName: String
-)
+sealed class ConsoleArguments {
+    data class Store(val sourceFileName: String) : ConsoleArguments()
+
+    data class Read(val outputFileName: String) : ConsoleArguments()
+}
