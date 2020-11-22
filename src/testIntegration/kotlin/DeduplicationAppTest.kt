@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.io.File
+import java.nio.file.Paths
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DeduplicationAppTest {
@@ -28,23 +29,26 @@ class DeduplicationAppTest {
 
     @Test
     fun `when program launched - then writes correct output file`() {
-        deduplicationApp.start(args = arrayOf(STORE_KEY, INPUT_PATH))
-        deduplicationApp.start(args = arrayOf(READ_KEY, INPUT_PATH, ACTUAL_OUTPUT_PATH))
-
-        assertOutputFile(
-            actualOutputPath = ACTUAL_OUTPUT_PATH,
-            expectedOutputPath = EXPECTED_OUTPUT_PATH
-        )
+        testApp(inputFile = INPUT_PATH, expectedOutputFile = EXPECTED_OUTPUT_PATH)
     }
 
     @Test
     fun `when program launched with unique input - then writes correct output file`() {
-        deduplicationApp.start(args = arrayOf(STORE_KEY, UNIQUE_INPUT_PATH))
-        deduplicationApp.start(args = arrayOf(READ_KEY, UNIQUE_INPUT_PATH, ACTUAL_OUTPUT_PATH))
+        testApp(inputFile = UNIQUE_INPUT_PATH, expectedOutputFile = UNIQUE_EXPECTED_OUTPUT_PATH)
+    }
+
+    @Test
+    fun `when program launched with war of worlds - then writes correct output file`() {
+        testApp(inputFile = WAR_INPUT_PATH, expectedOutputFile = WAR_EXPECTED_OUTPUT_PATH)
+    }
+
+    private fun testApp(inputFile: String, expectedOutputFile: String) {
+        deduplicationApp.start(args = arrayOf(STORE_KEY, inputFile))
+        deduplicationApp.start(args = arrayOf(READ_KEY, inputFile, ACTUAL_OUTPUT_PATH))
 
         assertOutputFile(
             actualOutputPath = ACTUAL_OUTPUT_PATH,
-            expectedOutputPath = UNIQUE_EXPECTED_OUTPUT_PATH
+            expectedOutputPath = expectedOutputFile
         )
     }
 
@@ -62,19 +66,17 @@ class DeduplicationAppTest {
         const val READ_KEY = "-r"
 
         val INPUT_PATH: String = getResourcePath("test_app_input.txt")
-        val EXPECTED_OUTPUT_PATH: String =
-            DeduplicationAppTest::class.java.getResource("test_app_expected_output.txt").path
+        val EXPECTED_OUTPUT_PATH: String = getResourcePath("test_app_expected_output.txt")
 
         val UNIQUE_INPUT_PATH: String = getResourcePath("test_app_unique_input.txt")
-        val UNIQUE_EXPECTED_OUTPUT_PATH: String =
-            DeduplicationAppTest::class.java.getResource("test_app_unique_expected_output.txt").path
+        val UNIQUE_EXPECTED_OUTPUT_PATH: String = getResourcePath("test_app_unique_expected_output.txt")
+
+        val WAR_INPUT_PATH: String = getResourcePath("test_app_source_war_input.txt")
+        val WAR_EXPECTED_OUTPUT_PATH: String = getResourcePath("test_app_source_war_expected_output.txt")
 
         const val ACTUAL_OUTPUT_PATH = "test_output.txt"
 
         private fun getResourcePath(fileName: String) =
-            DeduplicationAppTest::class.java.getResource(fileName).path.drop(1)
-//            File(DeduplicationAppTest::class.java.getResource(fileName).path).absolutePath
-//        Paths.get(DeduplicationAppTest::
-//        class.java.getResource(fileName).toURI()).toString()
+            Paths.get(DeduplicationAppTest::class.java.getResource(fileName).toURI()).toString()
     }
 }
