@@ -10,14 +10,11 @@ import javax.inject.Inject
 import kotlin.properties.Delegates
 
 class FileStorage @Inject constructor(
-    appConfig: AppConfig
+    private val appConfig: AppConfig
 ) : StorageApi {
 
     private var currentFileName: String by Delegates.observable("") { _, _, newFileName ->
-        val filePath = Paths.get(newFileName)
-        val storageDirectoryPath = Paths.get(appConfig.storageDirectoryName)
-        val mergedPath = storageDirectoryPath.resolve(filePath)
-        storagePath = mergedPath.normalize().toString()
+        storagePath = getFullPath(fileName = newFileName)
     }
 
     private var storagePath = ""
@@ -48,7 +45,8 @@ class FileStorage @Inject constructor(
 
             Reference(
                 id = chunk.hashCode(),
-                pageId = storagePath,
+//                pageId = storagePath,
+                pageId = Paths.get(storagePath).fileName.toString(),
                 segmentPosition = length()
             )
         }
@@ -57,7 +55,7 @@ class FileStorage @Inject constructor(
     }
 
     override fun getByReference(reference: Reference): Chunk {
-        val file = RandomAccessFile(reference.pageId, "r")
+        val file = RandomAccessFile(getFullPath(fileName = reference.pageId), "r")
         val chunk = with(file) {
             seek(reference.segmentPosition)
             val line = readLine().toByteArray(Charsets.ISO_8859_1).toString(Charsets.UTF_8)
@@ -88,6 +86,13 @@ class FileStorage @Inject constructor(
             it.replace(LINE_BREAK_STAND_IN, LINE_BREAK)
                 .replace(CARRIAGE_RETURN_STAND_IN, CARRIAGE_RETURN)
         }
+    }
+
+    private fun getFullPath(fileName: String): String {
+        val filePath = Paths.get(fileName)
+        val storageDirectoryPath = Paths.get(appConfig.storageDirectoryName)
+        val mergedPath = storageDirectoryPath.resolve(filePath)
+        return mergedPath.normalize().toString()
     }
 
     private companion object {

@@ -19,6 +19,12 @@ internal class ParseConsoleArgumentsUseCaseTest {
     }
 
     @Test
+    fun `when no key - then throws`() {
+        val rawArguments = arrayOf<String>()
+        shouldThrow<IllegalArgumentException> { parseConsoleArguments(rawArguments = rawArguments) }
+    }
+
+    @Test
     fun `when invalid number of arguments for storing - then throws`() {
         val rawArguments = arrayOf("--store", "a", "b")
         shouldThrow<IllegalArgumentException> { parseConsoleArguments(rawArguments = rawArguments) }

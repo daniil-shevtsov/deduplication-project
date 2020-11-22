@@ -27,7 +27,7 @@ class Deduplicator @Inject constructor(
         val parsedArguments = try {
             parseConsoleArguments(args)
         } catch (exception: Exception) {
-            println(exception.message)
+            logger.error { "FATAL ERROR: ${exception.message}" }
             return
         }
 

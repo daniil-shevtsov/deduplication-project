@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.io.File
+import java.nio.file.Paths
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DeduplicationAppTest {
@@ -40,7 +41,7 @@ class DeduplicationAppTest {
         const val STORE_KEY = "-s"
         const val READ_KEY = "-r"
 
-        val INPUT_PATH: String = DeduplicationAppTest::class.java.getResource("app_input.txt").path
+        val INPUT_PATH: String = getResourcePath("app_input.txt")
         val EXPECTED_OUTPUT_PATH: String = DeduplicationAppTest::class.java.getResource("app_expected_output.txt").path
 
         val UNIQUE_INPUT_PATH: String = DeduplicationAppTest::class.java.getResource("app_unique_input.txt").path
@@ -48,5 +49,9 @@ class DeduplicationAppTest {
             DeduplicationAppTest::class.java.getResource("app_unique_expected_output.txt").path
 
         const val ACTUAL_OUTPUT_PATH = "output.txt"
+
+        private fun getResourcePath(fileName: String) =
+//            File(DeduplicationAppTest::class.java.getResource(fileName).path).absolutePath
+            Paths.get(DeduplicationAppTest::class.java.getResource(fileName).toURI()).toString()
     }
 }
