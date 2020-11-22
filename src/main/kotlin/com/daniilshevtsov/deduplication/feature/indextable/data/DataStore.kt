@@ -30,6 +30,7 @@ class DataStore @Inject constructor(
                 SQLiteConfig().apply {
                     setSharedCache(true)
                     setJournalMode(SQLiteConfig.JournalMode.WAL)
+                    busyTimeout = 5000
                     apply(it)
                 }
             }
