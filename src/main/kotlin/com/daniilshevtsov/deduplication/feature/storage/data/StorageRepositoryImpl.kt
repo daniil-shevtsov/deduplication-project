@@ -25,7 +25,7 @@ class StorageRepositoryImpl @Inject constructor(
         storageApi.saveChunkByReference(reference = reference)
     }
 
-    override fun readAsSequence(): Sequence<SavedData> = storageApi.readAsSequence().map { line ->
+    override fun readAsSequence(pageId:String): Sequence<SavedData> = storageApi.readAsSequence(pageId).map { line ->
         when {
             line.startsWith("reference:") -> {
                 SavedData.TableReference(referenceId = line.substringAfter("reference:").toInt())

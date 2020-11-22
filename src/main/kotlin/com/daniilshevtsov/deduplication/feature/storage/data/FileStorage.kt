@@ -81,8 +81,8 @@ class FileStorage @Inject constructor(
         }
     }
 
-    override fun readAsSequence(): Sequence<String> {
-        return File(storagePath).bufferedReader().lineSequence().map {
+    override fun readAsSequence(pageId: String): Sequence<String> {
+        return File(getFullPath(fileName = pageId)).bufferedReader().lineSequence().map {
             it.replace(LINE_BREAK_STAND_IN, LINE_BREAK)
                 .replace(CARRIAGE_RETURN_STAND_IN, CARRIAGE_RETURN)
         }

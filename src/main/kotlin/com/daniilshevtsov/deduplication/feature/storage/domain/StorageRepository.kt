@@ -12,7 +12,7 @@ interface StorageRepository {
 
     fun getByReference(reference: Reference): Chunk
 
-    fun readAsSequence(): Sequence<SavedData>
+    fun readAsSequence(pageId: String): Sequence<SavedData>
 
     fun setCurrentPageId(pageId: String)
 

@@ -26,7 +26,6 @@ class DeduplicationApp {
     }
 
     private fun clean() {
-        File("storage").deleteRecursively()
         File("output.txt").delete()
         File("data.db").delete()
     }

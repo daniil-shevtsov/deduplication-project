@@ -33,7 +33,10 @@ class Deduplicator @Inject constructor(
 
         when (parsedArguments) {
             is ConsoleArguments.Store -> readAndStore(sourceFileName = parsedArguments.sourceFileName)
-            is ConsoleArguments.Read -> loadFromStorageAndWrite(outputFileName = parsedArguments.outputFileName)
+            is ConsoleArguments.Read -> loadFromStorageAndWrite(
+                sourceFileName = parsedArguments.sourceFileName,
+                outputFileName = parsedArguments.outputFileName
+            )
         }
     }
 
@@ -46,10 +49,13 @@ class Deduplicator @Inject constructor(
         }
     }
 
-    private fun loadFromStorageAndWrite(outputFileName: String) {
+    private fun loadFromStorageAndWrite(
+        sourceFileName: String,
+        outputFileName: String
+    ) {
         logger.debug { "write to $outputFileName" }
         prepareOutputStream(fileName = outputFileName).run {
-            getStorageAsSequence().toList()
+            getStorageAsSequence(pageId = sourceFileName).toList()
                 .forEach { savedData ->
                     val chunk = getResultingChunk(savedData = savedData)
                     write(chunk.value.toByteArray())

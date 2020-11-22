@@ -32,7 +32,7 @@ internal class ParseConsoleArgumentsUseCaseTest {
 
     @Test
     fun `when invalid number of arguments for reading - then throws`() {
-        val rawArguments = arrayOf("--read", "a", "b")
+        val rawArguments = arrayOf("--read", "a", "b", "c")
         shouldThrow<IllegalArgumentException> { parseConsoleArguments(rawArguments = rawArguments) }
     }
 
@@ -69,9 +69,10 @@ internal class ParseConsoleArgumentsUseCaseTest {
     @Test
     fun `when reading with full key - then parses correctly`() {
         val expected = ConsoleArguments.Read(
+            sourceFileName = "kek.txt",
             outputFileName = "lol.txt"
         )
-        val rawArguments = arrayOf("--read", "lol.txt")
+        val rawArguments = arrayOf("--read", "kek.txt", "lol.txt")
 
         val actual = parseConsoleArguments(rawArguments = rawArguments)
 
@@ -81,9 +82,10 @@ internal class ParseConsoleArgumentsUseCaseTest {
     @Test
     fun `when reading with short key - then parses correctly`() {
         val expected = ConsoleArguments.Read(
+            sourceFileName = "kek.txt",
             outputFileName = "lol.txt"
         )
-        val rawArguments = arrayOf("-r", "lol.txt")
+        val rawArguments = arrayOf("-r", "kek.txt", "lol.txt")
 
         val actual = parseConsoleArguments(rawArguments = rawArguments)
 

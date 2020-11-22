@@ -26,7 +26,8 @@ class ParseConsoleArgumentsUseCase @Inject constructor() {
         require(rawArguments.size == READ_ARGUMENTS_COUNT) { "Reading requires one argument: output file name" }
 
         return ConsoleArguments.Read(
-            outputFileName = rawArguments.first()
+            sourceFileName = rawArguments.first(),
+            outputFileName = rawArguments[1]
         )
     }
 
@@ -35,6 +36,6 @@ class ParseConsoleArgumentsUseCase @Inject constructor() {
         val READ_KEY_WORD = listOf("-r", "--read")
 
         const val STORE_ARGUMENTS_COUNT = 1
-        const val READ_ARGUMENTS_COUNT = 1
+        const val READ_ARGUMENTS_COUNT = 2
     }
 }
