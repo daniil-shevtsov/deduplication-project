@@ -6,6 +6,7 @@ import com.daniilshevtsov.deduplication.feature.consoleparsing.ParseConsoleArgum
 import com.daniilshevtsov.deduplication.feature.input.domain.PrepareInputUseCase
 import com.daniilshevtsov.deduplication.feature.input.domain.SplitToChunksUseCase
 import com.daniilshevtsov.deduplication.feature.output.PrepareOutputUseCase
+import com.daniilshevtsov.deduplication.feature.storage.domain.Counter
 import com.daniilshevtsov.deduplication.feature.storage.domain.GetResultingChunkUseCase
 import com.daniilshevtsov.deduplication.feature.storage.domain.GetStorageAsSequenceUseCase
 import com.daniilshevtsov.deduplication.feature.storage.domain.SetCurrentPageIdUseCase
@@ -72,6 +73,7 @@ class Deduplicator @Inject constructor(
             }
             flush()
         }
+        println("number of errors: ${Counter.count}")
     }
 
     private fun clean() {

@@ -10,5 +10,4 @@ fun main(args: Array<String>) {
         app.start(args = args)
     }
     println("execution time: ${executionDuration.inSeconds} seconds")
-
 }
