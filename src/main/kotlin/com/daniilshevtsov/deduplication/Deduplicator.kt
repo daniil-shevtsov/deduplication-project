@@ -7,12 +7,14 @@ import com.daniilshevtsov.deduplication.feature.input.domain.SplitToChunksUseCas
 import com.daniilshevtsov.deduplication.feature.output.PrepareOutputUseCase
 import com.daniilshevtsov.deduplication.feature.storage.domain.GetResultingChunkUseCase
 import com.daniilshevtsov.deduplication.feature.storage.domain.GetStorageAsSequenceUseCase
+import com.daniilshevtsov.deduplication.feature.storage.domain.SetCurrentPageIdUseCase
 import mu.KLogger
 import javax.inject.Inject
 
 class Deduplicator @Inject constructor(
     private val parseConsoleArguments: ParseConsoleArgumentsUseCase,
     private val prepareInputStream: PrepareInputUseCase,
+    private val setCurrentPageIdUseCase: SetCurrentPageIdUseCase,
     private val prepareOutputStream: PrepareOutputUseCase,
     private val handleChunk: HandleChunkUseCase,
     private val getStorageAsSequence: GetStorageAsSequenceUseCase,
@@ -28,8 +30,6 @@ class Deduplicator @Inject constructor(
             return
         }
 
-
-
         readAndStore(sourceFileName = parsedArguments.sourceFileName)
 
         loadFromStorageAndWrite(outputFileName = parsedArguments.outputFileName)
@@ -38,6 +38,7 @@ class Deduplicator @Inject constructor(
     private fun readAndStore(sourceFileName: String) {
         logger.debug { "read from $sourceFileName" }
         prepareInputStream(fileName = sourceFileName).run {
+            setCurrentPageIdUseCase(pageId = sourceFileName)
             splitToChunks(inputStream = this)
                 .forEach(handleChunk::invoke)
         }

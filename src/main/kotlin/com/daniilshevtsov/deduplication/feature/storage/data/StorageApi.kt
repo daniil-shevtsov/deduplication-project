@@ -5,6 +5,8 @@ import com.daniilshevtsov.deduplication.feature.core.Reference
 
 interface StorageApi {
 
+    fun setCurrentPageId(pageId: String)
+
     fun saveChunkByValue(chunk: Chunk): Reference
 
     fun getByReference(reference: Reference): Chunk

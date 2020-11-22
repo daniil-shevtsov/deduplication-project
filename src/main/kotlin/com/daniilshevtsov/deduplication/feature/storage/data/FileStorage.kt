@@ -6,13 +6,17 @@ import com.daniilshevtsov.deduplication.feature.core.Reference
 import java.io.File
 import java.io.RandomAccessFile
 import javax.inject.Inject
+import kotlin.properties.Delegates
 
 class FileStorage @Inject constructor(
     appConfig: AppConfig
 ) : StorageApi {
 
-    //TODO: Use different file names for different files
-    private val storageFileName = "${appConfig.storageDirectoryName}/${appConfig.storageFileName}"
+    private var currentFileName: String by Delegates.observable("") { _, _, newFileName ->
+        storagePath = "${appConfig.storageDirectoryName}/$newFileName"
+    }
+
+    private var storagePath = "${appConfig.storageDirectoryName}/${appConfig.storageFileName}"
 
     init {
         File(appConfig.storageDirectoryName).apply {
@@ -22,8 +26,12 @@ class FileStorage @Inject constructor(
         }
     }
 
+    override fun setCurrentPageId(pageId: String) {
+        currentFileName = pageId
+    }
+
     override fun saveChunkByValue(chunk: Chunk): Reference {
-        val file = RandomAccessFile(storageFileName, "rw")
+        val file = RandomAccessFile(storagePath, "rw")
         val reference = with(file) {
             seek(length())
             write("value:".toByteArray())
@@ -36,7 +44,7 @@ class FileStorage @Inject constructor(
 
             Reference(
                 id = chunk.hashCode(),
-                pageId = storageFileName,
+                pageId = storagePath,
                 segmentPosition = length()
             )
         }
@@ -61,7 +69,7 @@ class FileStorage @Inject constructor(
     }
 
     override fun saveChunkByReference(reference: Reference) {
-        RandomAccessFile(storageFileName, "rw").apply {
+        RandomAccessFile(storagePath, "rw").apply {
             seek(length())
             write("reference:".toByteArray())
             write(reference.id.toString().toByteArray())
@@ -72,15 +80,13 @@ class FileStorage @Inject constructor(
     }
 
     override fun readAsSequence(): Sequence<String> {
-        return File(storageFileName).bufferedReader().lineSequence().map {
+        return File(storagePath).bufferedReader().lineSequence().map {
             it.replace(LINE_BREAK_STAND_IN, LINE_BREAK)
                 .replace(CARRIAGE_RETURN_STAND_IN, CARRIAGE_RETURN)
         }
     }
 
     private companion object {
-        const val STORAGE_DIRECTORY_NAME = "storage"
-
         const val LINE_BREAK = '\n'
         const val CARRIAGE_RETURN = '\r'
         const val LINE_BREAK_STAND_IN = '˫'

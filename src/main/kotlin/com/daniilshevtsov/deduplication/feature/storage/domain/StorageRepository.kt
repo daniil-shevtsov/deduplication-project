@@ -14,4 +14,6 @@ interface StorageRepository {
 
     fun readAsSequence(): Sequence<SavedData>
 
+    fun setCurrentPageId(pageId: String)
+
 }

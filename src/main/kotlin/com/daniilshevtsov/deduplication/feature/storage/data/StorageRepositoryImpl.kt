@@ -38,4 +38,7 @@ class StorageRepositoryImpl @Inject constructor(
 
     }
 
+    override fun setCurrentPageId(pageId: String) {
+        storageApi.setCurrentPageId(pageId)
+    }
 }
