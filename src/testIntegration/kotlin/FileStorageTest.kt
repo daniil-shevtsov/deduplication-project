@@ -71,6 +71,15 @@ class FileStorageTest {
     }
 
     @Test
+    fun `when writing reference - it is read correctly later`() {
+        val originalChunk = Chunk(value = "lol".toByteArray().toList())
+        val reference = fileStorage.saveChunkByValue(chunk = originalChunk)
+        val actualChunk = fileStorage.getByReference(reference = reference)
+
+        actualChunk shouldBe originalChunk
+    }
+
+    @Test
     fun `when writing value and reference - they are written correctly`() {
         fileStorage.saveChunkByValue(chunk = Chunk(value = "lol".toByteArray().toList()))
         fileStorage.saveChunkByReference(reference = Reference(id = 5, pageId = "kek.txt", segmentPosition = 0))

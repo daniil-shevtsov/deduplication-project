@@ -35,7 +35,8 @@ class FileStorage @Inject constructor(
         val file = RandomAccessFile(storagePath, "rw")
         val reference = with(file) {
             seek(length())
-            write("value:".toByteArray())
+            write(VALUE_PREFIX.toByteArray())
+            val position = length()
             val payload = chunk.value.toByteArray().toString(Charsets.UTF_8)
                 .replace(LINE_BREAK, LINE_BREAK_STAND_IN)
                 .replace(CARRIAGE_RETURN, CARRIAGE_RETURN_STAND_IN)
@@ -45,9 +46,8 @@ class FileStorage @Inject constructor(
 
             Reference(
                 id = chunk.hashCode(),
-//                pageId = storagePath,
                 pageId = Paths.get(storagePath).fileName.toString(),
-                segmentPosition = length()
+                segmentPosition = position
             )
         }
         file.close()
@@ -59,7 +59,7 @@ class FileStorage @Inject constructor(
         val chunk = with(file) {
             seek(reference.segmentPosition)
             val line = readLine().toByteArray(Charsets.ISO_8859_1).toString(Charsets.UTF_8)
-            val payload = line.substringAfter("reference:")
+            val payload = line.substringAfter(REFERENCE_PREFIX)
                 .replace(LINE_BREAK_STAND_IN, LINE_BREAK)
                 .replace(CARRIAGE_RETURN_STAND_IN, CARRIAGE_RETURN)
             val lineBytes = payload.toByteArray().toList()
@@ -96,6 +96,9 @@ class FileStorage @Inject constructor(
     }
 
     private companion object {
+        const val VALUE_PREFIX = "value:"
+        const val REFERENCE_PREFIX = "reference:"
+
         const val LINE_BREAK = '\n'
         const val CARRIAGE_RETURN = '\r'
         const val LINE_BREAK_STAND_IN = '˫'
