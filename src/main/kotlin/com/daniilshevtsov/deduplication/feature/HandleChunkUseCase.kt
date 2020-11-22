@@ -1,12 +1,17 @@
 package com.daniilshevtsov.deduplication.feature
 
 import com.daniilshevtsov.deduplication.feature.core.Chunk
+import com.daniilshevtsov.deduplication.feature.core.Reference
 import com.daniilshevtsov.deduplication.feature.indextable.domain.CalculateHashForChunkUseCase
 import com.daniilshevtsov.deduplication.feature.indextable.domain.CheckChunkDuplicatedUseCase
 import com.daniilshevtsov.deduplication.feature.indextable.domain.LoadReferenceUseCase
 import com.daniilshevtsov.deduplication.feature.indextable.domain.SaveReferenceUseCase
 import com.daniilshevtsov.deduplication.feature.storage.domain.SaveChunkToStorageUseCase
 import com.daniilshevtsov.deduplication.feature.storage.domain.SaveReferenceToStorageUseCase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class HandleChunkUseCase @Inject constructor(
@@ -27,7 +32,13 @@ class HandleChunkUseCase @Inject constructor(
             }
         } else {
             val reference = saveChunkToStorage(chunk = chunk)
-            saveReference(key = key, reference = reference)
+            GlobalScope.launch {
+                saveReferenceAsync(key = key, reference = reference)
+            }
         }
+    }
+
+    private suspend fun saveReferenceAsync(key: Int, reference: Reference) = withContext(Dispatchers.IO) {
+        saveReference(key = key, reference = reference)
     }
 }
