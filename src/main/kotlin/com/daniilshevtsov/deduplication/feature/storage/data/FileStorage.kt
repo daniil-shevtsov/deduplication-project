@@ -5,6 +5,7 @@ import com.daniilshevtsov.deduplication.feature.core.Chunk
 import com.daniilshevtsov.deduplication.feature.core.Reference
 import java.io.File
 import java.io.RandomAccessFile
+import java.nio.file.Paths
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
@@ -13,10 +14,13 @@ class FileStorage @Inject constructor(
 ) : StorageApi {
 
     private var currentFileName: String by Delegates.observable("") { _, _, newFileName ->
-        storagePath = "${appConfig.storageDirectoryName}/$newFileName"
+        val filePath = Paths.get(newFileName)
+        val storageDirectoryPath = Paths.get(appConfig.storageDirectoryName)
+        val mergedPath = storageDirectoryPath.resolve(filePath)
+        storagePath = mergedPath.normalize().toString()
     }
 
-    private var storagePath = "${appConfig.storageDirectoryName}/${appConfig.storageFileName}"
+    private var storagePath = ""
 
     init {
         File(appConfig.storageDirectoryName).apply {

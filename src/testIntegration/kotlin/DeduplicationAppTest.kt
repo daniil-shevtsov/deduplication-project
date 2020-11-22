@@ -16,14 +16,16 @@ class DeduplicationAppTest {
 
     @Test
     fun `when program launched - then writes correct output file`() {
-        deduplicationApp.start(args = arrayOf(INPUT_PATH, ACTUAL_OUTPUT_PATH))
+        deduplicationApp.start(args = arrayOf(STORE_KEY, INPUT_PATH))
+        deduplicationApp.start(args = arrayOf(READ_KEY, EXPECTED_OUTPUT_PATH))
 
         assertOutputFile(expectedOutputPath = EXPECTED_OUTPUT_PATH)
     }
 
     @Test
     fun `when program launched with unique input - then writes correct output file`() {
-        deduplicationApp.start(args = arrayOf(UNIQUE_INPUT_PATH, ACTUAL_OUTPUT_PATH))
+        deduplicationApp.start(args = arrayOf(STORE_KEY, UNIQUE_INPUT_PATH))
+        deduplicationApp.start(args = arrayOf(READ_KEY, ACTUAL_OUTPUT_PATH))
 
         assertOutputFile(expectedOutputPath = UNIQUE_EXPECTED_OUTPUT_PATH)
     }
@@ -35,6 +37,9 @@ class DeduplicationAppTest {
     }
 
     private companion object {
+        const val STORE_KEY = "-s"
+        const val READ_KEY = "-r"
+
         val INPUT_PATH: String = DeduplicationAppTest::class.java.getResource("app_input.txt").path
         val EXPECTED_OUTPUT_PATH: String = DeduplicationAppTest::class.java.getResource("app_expected_output.txt").path
 

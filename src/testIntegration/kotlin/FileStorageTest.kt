@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.io.File
+import java.nio.file.Paths
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class FileStorageTest {
@@ -16,12 +17,39 @@ class FileStorageTest {
 
     @BeforeEach
     fun onSetup() {
-        fileStorage = FileStorage(appConfig = AppConfig(chunkSize = 4, storageFileName = STORAGE_FILE_NAME))
+        fileStorage = FileStorage(appConfig = createAppConfig())
+        fileStorage.setCurrentPageId(pageId = STORAGE_FILE_NAME)
     }
+
+    private fun createAppConfig(
+        storageFileName: String = STORAGE_FILE_NAME,
+        storageDirectoryName: String = STORAGE_DIRECTORY_NAME
+    ) = AppConfig(
+        chunkSize = 4,
+        storageFileName = storageFileName,
+        storageDirectoryName = storageDirectoryName
+    )
 
     @AfterEach
     fun onTeardown() {
-        File(STORAGE_FILE_NAME).delete()
+        File(STORAGE_DIRECTORY_NAME).deleteRecursively()
+    }
+
+    @Test
+    fun `when using absolute and relative paths together - everything works correctly`() {
+        val storage = formStorageFilePath(fileName = STORAGE_FILE_NAME)
+        fileStorage = FileStorage(
+            appConfig = createAppConfig(
+                storageDirectoryName = STORAGE_DIRECTORY_NAME,
+                storageFileName = STORAGE_FILE_NAME
+            )
+        )
+        fileStorage.setCurrentPageId(pageId = STORAGE_FILE_NAME)
+        fileStorage.saveChunkByValue(chunk = Chunk(value = "lol".toByteArray().toList()))
+
+        val expected = File(EXPECTED_CHUNK_FILE_PATH).readLines()
+        val actual = File(storage).readLines()
+        actual shouldBe expected
     }
 
     @Test
@@ -29,7 +57,7 @@ class FileStorageTest {
         fileStorage.saveChunkByValue(chunk = Chunk(value = "lol".toByteArray().toList()))
 
         val expected = File(EXPECTED_CHUNK_FILE_PATH).readLines()
-        val actual = File(STORAGE_FILE_NAME).readLines()
+        val actual = File(formStorageFilePath(fileName = STORAGE_FILE_NAME)).readLines()
         actual shouldBe expected
     }
 
@@ -38,7 +66,7 @@ class FileStorageTest {
         fileStorage.saveChunkByReference(reference = Reference(id = 5, pageId = "kek.txt", segmentPosition = 0))
 
         val expected = File(EXPECTED_REFERENCE_FILE_PATH).readLines()
-        val actual = File(STORAGE_FILE_NAME).readLines()
+        val actual = File(formStorageFilePath(fileName = STORAGE_FILE_NAME)).readLines()
         actual shouldBe expected
     }
 
@@ -49,7 +77,7 @@ class FileStorageTest {
         fileStorage.saveChunkByValue(chunk = Chunk(value = "kek".toByteArray().toList()))
 
         val expected = File(EXPECTED_VALUE_AND_REFERENCE_FILE_PATH).readLines()
-        val actual = File(STORAGE_FILE_NAME).readLines()
+        val actual = File(formStorageFilePath(fileName = STORAGE_FILE_NAME)).readLines()
         actual shouldBe expected
     }
 
@@ -60,7 +88,12 @@ class FileStorageTest {
             FileStorageTest::class.java.getResource("file_storage_expected_reference.txt").path
         private val EXPECTED_VALUE_AND_REFERENCE_FILE_PATH =
             FileStorageTest::class.java.getResource("file_storage_expected_value_and_reference.txt").path
+
         private const val STORAGE_FILE_NAME = "test_storage.txt"
+        private const val STORAGE_DIRECTORY_NAME = "test_storage"
     }
+
+    private fun formStorageFilePath(fileName: String) =
+        Paths.get(STORAGE_DIRECTORY_NAME).resolve(Paths.get(fileName)).normalize().toAbsolutePath().toString()
 
 }

@@ -1,6 +1,7 @@
 package com.daniilshevtsov.deduplication
 
 import com.daniilshevtsov.deduplication.feature.HandleChunkUseCase
+import com.daniilshevtsov.deduplication.feature.consoleparsing.ConsoleArguments
 import com.daniilshevtsov.deduplication.feature.consoleparsing.ParseConsoleArgumentsUseCase
 import com.daniilshevtsov.deduplication.feature.input.domain.PrepareInputUseCase
 import com.daniilshevtsov.deduplication.feature.input.domain.SplitToChunksUseCase
@@ -30,9 +31,10 @@ class Deduplicator @Inject constructor(
             return
         }
 
-        readAndStore(sourceFileName = parsedArguments.sourceFileName)
-
-        loadFromStorageAndWrite(outputFileName = parsedArguments.outputFileName)
+        when (parsedArguments) {
+            is ConsoleArguments.Store -> readAndStore(sourceFileName = parsedArguments.sourceFileName)
+            is ConsoleArguments.Read -> loadFromStorageAndWrite(outputFileName = parsedArguments.outputFileName)
+        }
     }
 
     private fun readAndStore(sourceFileName: String) {
