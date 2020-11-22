@@ -47,8 +47,12 @@ class Deduplicator @Inject constructor(
 
         prepareInputStream(fileName = sourceFileName).run {
             setCurrentPageIdUseCase(pageId = sourceFileName)
-            splitToChunks(inputStream = this)
-                .forEach(handleChunk::invoke)
+            val list = splitToChunks(inputStream = this)
+            val listSize = list.size
+            list.forEachIndexed { index, chunk ->
+                println("${String.format("%.2f", (index+1)/(listSize.toDouble() * 0.01)) } / 100")
+                handleChunk(chunk)
+            }
         }
     }
 
@@ -59,11 +63,13 @@ class Deduplicator @Inject constructor(
         logger.debug { "write to $outputFileName" }
 
         prepareOutputStream(fileName = outputFileName).run {
-            getStorageAsSequence(pageId = sourceFileName).toList()
-                .forEach { savedData ->
-                    val chunk = getResultingChunk(savedData = savedData)
-                    write(chunk.value.toByteArray())
-                }
+            val list = getStorageAsSequence(pageId = sourceFileName).toList()
+            val listSize = list.size
+            list.forEachIndexed { index, savedData ->
+                println("${String.format("%.2f", (index+1)/(listSize.toDouble() * 0.01)) } / 100")
+                val chunk = getResultingChunk(savedData = savedData)
+                write(chunk.value.toByteArray())
+            }
             flush()
         }
     }
