@@ -3,6 +3,7 @@ package com.daniilshevtsov.deduplication
 import com.daniilshevtsov.deduplication.feature.HandleChunkUseCase
 import com.daniilshevtsov.deduplication.feature.consoleparsing.ConsoleArguments
 import com.daniilshevtsov.deduplication.feature.consoleparsing.ParseConsoleArgumentsUseCase
+import com.daniilshevtsov.deduplication.feature.indextable.domain.SaveReferencesUseCase
 import com.daniilshevtsov.deduplication.feature.input.domain.PrepareInputUseCase
 import com.daniilshevtsov.deduplication.feature.input.domain.SplitToChunksUseCase
 import com.daniilshevtsov.deduplication.feature.output.PrepareOutputUseCase
@@ -20,6 +21,7 @@ class Deduplicator @Inject constructor(
     private val setCurrentPageIdUseCase: SetCurrentPageIdUseCase,
     private val prepareOutputStream: PrepareOutputUseCase,
     private val handleChunk: HandleChunkUseCase,
+    private val saveReferences: SaveReferencesUseCase,
     private val getStorageAsSequence: GetStorageAsSequenceUseCase,
     private val getResultingChunk: GetResultingChunkUseCase,
     private val splitToChunks: SplitToChunksUseCase,
@@ -51,10 +53,11 @@ class Deduplicator @Inject constructor(
             val list = splitToChunks(inputStream = this)
             val listSize = list.size
             list.forEachIndexed { index, chunk ->
-                println("${String.format("%.2f", (index+1)/(listSize.toDouble() * 0.01)) } / 100")
+                println("${String.format("%.2f", (index + 1) / (listSize.toDouble() * 0.01))} / 100")
                 handleChunk(chunk)
             }
         }
+        saveReferences()
     }
 
     private fun loadFromStorageAndWrite(
@@ -67,7 +70,7 @@ class Deduplicator @Inject constructor(
             val list = getStorageAsSequence(pageId = sourceFileName).toList()
             val listSize = list.size
             list.forEachIndexed { index, savedData ->
-                println("${String.format("%.2f", (index+1)/(listSize.toDouble() * 0.01)) } / 100")
+                println("${String.format("%.2f", (index + 1) / (listSize.toDouble() * 0.01))} / 100")
                 val chunk = getResultingChunk(savedData = savedData)
                 write(chunk.value.toByteArray())
             }

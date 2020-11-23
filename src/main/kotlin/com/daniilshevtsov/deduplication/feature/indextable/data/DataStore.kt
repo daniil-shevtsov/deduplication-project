@@ -7,7 +7,6 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.TransactionManager
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.sqlite.SQLiteConfig
 import java.sql.Connection
@@ -43,6 +42,14 @@ class DataStore @Inject constructor(
         }
     }
 
+    override fun saveReferences(references: List<ReferenceEntity>) {
+        transaction {
+            references.forEach {
+                it.toExposed()
+            }
+        }
+    }
+
     override fun findReferenceByHash(hash: Int): ReferenceEntity? = transaction {
         ReferenceExposedEntity.find {
             ReferenceTable.segmentHash eq hash
@@ -52,12 +59,6 @@ class DataStore @Inject constructor(
 
     override fun getReference(id: Int): ReferenceEntity? = transaction {
         ReferenceExposedEntity.findById(id)?.toEntity()
-    }
-
-    override suspend fun saveReference(referenceEntity: ReferenceEntity) {
-        newSuspendedTransaction {
-            referenceEntity.toExposed()
-        }
     }
 
     private fun ReferenceExposedEntity.toEntity() = ReferenceEntity(

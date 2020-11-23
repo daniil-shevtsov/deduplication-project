@@ -6,7 +6,7 @@ interface IndexTableRepository {
 
     fun checkContains(key: Int): Boolean
 
-    suspend fun save(key: Int, reference: Reference)
+    fun save(references: List<Reference>)
 
     fun get(key: Int): Reference?
 
