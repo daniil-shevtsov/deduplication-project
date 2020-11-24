@@ -1,10 +1,14 @@
 package com.daniilshevtsov.deduplication.feature.main
 
+import com.daniilshevtsov.deduplication.feature.indextable.data.DataStoreApi
 import java.io.File
 import javax.inject.Inject
 
-class CleanFilesUseCase @Inject constructor() {
+class CleanFilesUseCase @Inject constructor(
+    private val dataStoreApi: DataStoreApi
+) {
     operator fun invoke() {
+        dataStoreApi.deleteEverything()
         File("data.db").delete()
 
         //TODO: Use dynamic storage name

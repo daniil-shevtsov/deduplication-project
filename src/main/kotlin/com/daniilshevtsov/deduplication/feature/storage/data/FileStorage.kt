@@ -61,7 +61,7 @@ class FileStorage @Inject constructor(
         val chunk = with(file) {
             seek(reference.segmentPosition)
             val line = readLine().toByteArray(Charsets.ISO_8859_1).toString(Charsets.UTF_8)
-            val payload = line.substringAfter(REFERENCE_PREFIX)
+            val payload = line
                 .replace(LINE_BREAK_STAND_IN, LINE_BREAK)
                 .replace(CARRIAGE_RETURN_STAND_IN, CARRIAGE_RETURN)
             val lineBytes = payload.toByteArray().toList()

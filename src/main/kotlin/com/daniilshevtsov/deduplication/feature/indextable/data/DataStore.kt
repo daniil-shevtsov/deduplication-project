@@ -23,7 +23,6 @@ class DataStore @Inject constructor(
 
     private fun setupDatabase() {
         val dataSource = HikariDataSource().apply {
-            jdbcUrl = "jdbc:sqlite:./data.db"
             dataSourceClassName = "org.sqlite.SQLiteDataSource"
 
             maximumPoolSize = 3
@@ -38,6 +37,12 @@ class DataStore @Inject constructor(
         transaction {
             addLogger(StdOutSqlLogger)
             SchemaUtils.create(ReferenceTable)
+        }
+    }
+
+    override fun deleteEverything() {
+        transaction {
+            ReferenceTable.dropStatement()
         }
     }
 
