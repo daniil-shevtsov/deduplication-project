@@ -6,4 +6,5 @@ interface DataStoreApi {
     fun findReferenceByHash(hash: Int): ReferenceEntity?
 
     fun getReference(id: Int): ReferenceEntity?
+
 }

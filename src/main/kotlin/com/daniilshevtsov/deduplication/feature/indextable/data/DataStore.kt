@@ -44,8 +44,8 @@ class DataStore @Inject constructor(
 
     override fun saveReferences(references: List<ReferenceEntity>) {
         transaction {
-            references.forEach {
-                it.toExposed()
+            references.forEach { reference ->
+                reference.toExposed()
             }
         }
     }
