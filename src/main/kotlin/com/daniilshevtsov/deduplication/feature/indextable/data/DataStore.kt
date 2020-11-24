@@ -50,6 +50,12 @@ class DataStore @Inject constructor(
         }
     }
 
+    override fun saveReference(reference: ReferenceEntity) {
+        transaction {
+            reference.toExposed()
+        }
+    }
+
     override fun findReferenceByHash(hash: Int): ReferenceEntity? = transaction {
         ReferenceExposedEntity.find {
             ReferenceTable.segmentHash eq hash

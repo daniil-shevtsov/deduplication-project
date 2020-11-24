@@ -1,10 +1,7 @@
 package com.daniilshevtsov.deduplication.feature
 
 import com.daniilshevtsov.deduplication.feature.core.Chunk
-import com.daniilshevtsov.deduplication.feature.indextable.domain.CalculateHashForChunkUseCase
-import com.daniilshevtsov.deduplication.feature.indextable.domain.CheckChunkDuplicatedUseCase
-import com.daniilshevtsov.deduplication.feature.indextable.domain.LoadReferenceUseCase
-import com.daniilshevtsov.deduplication.feature.indextable.domain.SaveReferenceToCacheUseCase
+import com.daniilshevtsov.deduplication.feature.indextable.domain.*
 import com.daniilshevtsov.deduplication.feature.storage.domain.SaveChunkToStorageUseCase
 import com.daniilshevtsov.deduplication.feature.storage.domain.SaveReferenceToStorageUseCase
 import javax.inject.Inject
@@ -14,6 +11,7 @@ class HandleChunkUseCase @Inject constructor(
     private val checkChunkDuplicated: CheckChunkDuplicatedUseCase,
     private val loadReference: LoadReferenceUseCase,
     private val saveReferenceToCache: SaveReferenceToCacheUseCase,
+    private val saveReference: SaveReferenceUseCase,
     private val saveReferenceToStorage: SaveReferenceToStorageUseCase,
     private val saveChunkToStorage: SaveChunkToStorageUseCase
 ) {
@@ -27,7 +25,8 @@ class HandleChunkUseCase @Inject constructor(
             }
         } else {
             val reference = saveChunkToStorage(chunk = chunk)
-            saveReferenceToCache(reference = reference)
+            saveReference(reference)
+//            saveReferenceToCache(reference = reference)
         }
     }
 }

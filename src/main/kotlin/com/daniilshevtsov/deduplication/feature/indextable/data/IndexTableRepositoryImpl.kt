@@ -11,18 +11,16 @@ class IndexTableRepositoryImpl @Inject constructor(
     private val dataStoreApi: DataStoreApi
 ) : IndexTableRepository {
 
-    override fun checkContains(key: Int): Boolean = referenceCache.checkContains(key)//dataStoreApi.findReferenceByHash(hash = key) != null
+    override fun checkContains(key: Int): Boolean =
+        dataStoreApi.findReferenceByHash(hash = key) != null
 
     //TODO: Fill segment count correctly
-    override fun save(references: List<Reference>) {
-        dataStoreApi.saveReferences(references = references.map { reference ->
-            ReferenceEntity(
-                segmentHash = reference.id,
-                fileName = reference.pageId,
-                segmentPosition = reference.segmentPosition,
-                segmentCount = 0
-            )
-        })
+    override fun saveAll(references: List<Reference>) {
+        dataStoreApi.saveReferences(references = references.map { reference -> reference.toEntity() })
+    }
+
+    override fun saveReference(reference: Reference) {
+        dataStoreApi.saveReference(reference = reference.toEntity())
     }
 
     override fun get(key: Int): Reference? {
@@ -34,4 +32,11 @@ class IndexTableRepositoryImpl @Inject constructor(
             )
         }
     }
+
+    private fun Reference.toEntity() = ReferenceEntity(
+        segmentHash = id,
+        fileName = pageId,
+        segmentPosition = segmentPosition,
+        segmentCount = 0
+    )
 }

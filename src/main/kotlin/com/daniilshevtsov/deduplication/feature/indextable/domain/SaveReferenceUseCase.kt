@@ -1,13 +1,10 @@
 package com.daniilshevtsov.deduplication.feature.indextable.domain
 
-import com.daniilshevtsov.deduplication.feature.indextable.data.ReferenceCache
+import com.daniilshevtsov.deduplication.feature.core.Reference
 import javax.inject.Inject
 
-class SaveReferencesUseCase @Inject constructor(
-    private val referenceCache: ReferenceCache,
+class SaveReferenceUseCase @Inject constructor(
     private val indexTableRepository: IndexTableRepository
 ) {
-    operator fun invoke() {
-        indexTableRepository.save(references = referenceCache.getReferences())
-    }
+    operator fun invoke(reference: Reference) = indexTableRepository.saveReference(reference)
 }
