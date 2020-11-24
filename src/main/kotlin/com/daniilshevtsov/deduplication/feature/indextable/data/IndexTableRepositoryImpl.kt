@@ -7,10 +7,11 @@ import javax.inject.Inject
 
 @ApplicationScope
 class IndexTableRepositoryImpl @Inject constructor(
+    private val referenceCache: ReferenceCache,
     private val dataStoreApi: DataStoreApi
 ) : IndexTableRepository {
 
-    override fun checkContains(key: Int): Boolean = dataStoreApi.findReferenceByHash(hash = key) != null
+    override fun checkContains(key: Int): Boolean = referenceCache.checkContains(key)//dataStoreApi.findReferenceByHash(hash = key) != null
 
     //TODO: Fill segment count correctly
     override fun save(references: List<Reference>) {
