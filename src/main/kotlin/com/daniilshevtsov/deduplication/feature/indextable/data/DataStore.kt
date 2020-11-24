@@ -23,8 +23,9 @@ class DataStore @Inject constructor(
 
     private fun setupDatabase() {
         val dataSource = HikariDataSource().apply {
-            dataSourceClassName = "org.sqlite.SQLiteDataSource"
-
+//            dataSourceClassName = "org.sqlite.SQLiteDataSource"
+            driverClassName = "org.sqlite.JDBC"
+            jdbcUrl = "jdbc:sqlite:./data.db"
             maximumPoolSize = 3
             transactionIsolation = "TRANSACTION_SERIALIZABLE"
             validate()

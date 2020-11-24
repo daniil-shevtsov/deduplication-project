@@ -16,7 +16,7 @@ class GetChunkByReferenceUseCase @Inject constructor(
         val reference = tableRepository.get(key = referenceId)
         val chunk = if (reference == null) {
             Counter.count++
-            Chunk(value = "".toByteArray().toList())
+            Chunk(value = "����".toByteArray().toList())
         } else {
             storageRepository.getByReference(reference = reference)
         }
