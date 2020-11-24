@@ -11,7 +11,7 @@ class IndexTableRepositoryImpl @Inject constructor(
     private val dataStoreApi: DataStoreApi
 ) : IndexTableRepository {
 
-    override fun checkContains(key: Int): Boolean =
+    override fun checkContains(key: String): Boolean =
         dataStoreApi.findReferenceByHash(hash = key) != null
 
     //TODO: Fill segment count correctly
@@ -23,7 +23,7 @@ class IndexTableRepositoryImpl @Inject constructor(
         dataStoreApi.saveReference(reference = reference.toEntity())
     }
 
-    override fun get(key: Int): Reference? {
+    override fun get(key: String): Reference? {
         return dataStoreApi.findReferenceByHash(hash = key)?.let { referenceEntity ->
             Reference(
                 id = referenceEntity.segmentHash,

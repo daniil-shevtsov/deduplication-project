@@ -47,6 +47,6 @@ class ByteTest {
     }
 
     private companion object {
-        const val STORAGE_FILE_NAME = "kekk.txt"
+        const val STORAGE_FILE_NAME = "output/kekk.txt"
     }
 }

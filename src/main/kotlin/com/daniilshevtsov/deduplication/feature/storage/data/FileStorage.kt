@@ -3,6 +3,7 @@ package com.daniilshevtsov.deduplication.feature.storage.data
 import com.daniilshevtsov.deduplication.feature.core.AppConfig
 import com.daniilshevtsov.deduplication.feature.core.Chunk
 import com.daniilshevtsov.deduplication.feature.core.Reference
+import com.daniilshevtsov.deduplication.feature.indextable.domain.CalculateHashForChunkUseCase
 import java.io.File
 import java.io.RandomAccessFile
 import java.nio.file.Paths
@@ -10,7 +11,8 @@ import javax.inject.Inject
 import kotlin.properties.Delegates
 
 class FileStorage @Inject constructor(
-    private val appConfig: AppConfig
+    private val appConfig: AppConfig,
+    private val calculateHashForChunkUseCase: CalculateHashForChunkUseCase
 ) : StorageApi {
 
     private var currentFileName: String by Delegates.observable("") { _, _, newFileName ->
@@ -45,7 +47,7 @@ class FileStorage @Inject constructor(
             write("\n".toByteArray())
 
             Reference(
-                id = chunk.hashCode(),
+                id = calculateHashForChunkUseCase(chunk),
                 pageId = Paths.get(storagePath).fileName.toString(),
                 segmentPosition = position
             )
@@ -85,7 +87,7 @@ class FileStorage @Inject constructor(
         return File(getFullPath(fileName = pageId)).bufferedReader().lineSequence().map { line ->
             when {
                 line.startsWith(REFERENCE_PREFIX) -> {
-                    SavedData.TableReference(referenceId = line.substringAfter(REFERENCE_PREFIX).toInt())
+                    SavedData.TableReference(referenceId = line.substringAfter(REFERENCE_PREFIX))
                 }
                 line.startsWith(VALUE_PREFIX) -> {
                     val entry = line.substringAfter(VALUE_PREFIX)

@@ -12,7 +12,7 @@ class GetChunkByReferenceUseCase @Inject constructor(
     private val storageRepository: StorageRepository,
     private val tableRepository: IndexTableRepository
 ) {
-    operator fun invoke(referenceId: Int): Chunk {
+    operator fun invoke(referenceId: String): Chunk {
         val reference = tableRepository.get(key = referenceId)
         val chunk = if (reference == null) {
             Counter.count++

@@ -5,5 +5,5 @@ import javax.inject.Inject
 class CheckChunkDuplicatedUseCase @Inject constructor(
     private val indexTableRepository: IndexTableRepository
 ) {
-    operator fun invoke(key: Int): Boolean = indexTableRepository.checkContains(key = key)
+    operator fun invoke(key: String): Boolean = indexTableRepository.checkContains(key = key)
 }

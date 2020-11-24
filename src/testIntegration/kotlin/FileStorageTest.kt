@@ -1,6 +1,7 @@
 import com.daniilshevtsov.deduplication.feature.core.AppConfig
 import com.daniilshevtsov.deduplication.feature.core.Chunk
 import com.daniilshevtsov.deduplication.feature.core.Reference
+import com.daniilshevtsov.deduplication.feature.indextable.domain.CalculateHashForChunkUseCase
 import com.daniilshevtsov.deduplication.feature.storage.data.FileStorage
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.AfterEach
@@ -17,7 +18,8 @@ class FileStorageTest {
 
     @BeforeEach
     fun onSetup() {
-        fileStorage = FileStorage(appConfig = createAppConfig())
+        fileStorage =
+            FileStorage(appConfig = createAppConfig(), calculateHashForChunkUseCase = CalculateHashForChunkUseCase())
         fileStorage.setCurrentPageId(pageId = STORAGE_FILE_NAME)
     }
 
@@ -42,7 +44,8 @@ class FileStorageTest {
             appConfig = createAppConfig(
                 storageDirectoryName = STORAGE_DIRECTORY_NAME,
                 storageFileName = STORAGE_FILE_NAME
-            )
+            ),
+            calculateHashForChunkUseCase = CalculateHashForChunkUseCase()
         )
         fileStorage.setCurrentPageId(pageId = STORAGE_FILE_NAME)
         fileStorage.saveChunkByValue(chunk = Chunk(value = "‘".toByteArray(Charsets.UTF_8).toList()))
@@ -59,7 +62,8 @@ class FileStorageTest {
             appConfig = createAppConfig(
                 storageDirectoryName = STORAGE_DIRECTORY_NAME,
                 storageFileName = STORAGE_FILE_NAME
-            )
+            ),
+            calculateHashForChunkUseCase = CalculateHashForChunkUseCase()
         )
         fileStorage.setCurrentPageId(pageId = STORAGE_FILE_NAME)
         fileStorage.saveChunkByValue(chunk = Chunk(value = "lol".toByteArray().toList()))
@@ -80,7 +84,7 @@ class FileStorageTest {
 
     @Test
     fun `when writing reference - it is written correctly`() {
-        fileStorage.saveChunkByReference(reference = Reference(id = 5, pageId = "kek.txt", segmentPosition = 0))
+        fileStorage.saveChunkByReference(reference = Reference(id = "5", pageId = "kek.txt", segmentPosition = 0))
 
         val expected = File(EXPECTED_REFERENCE_FILE_PATH).readLines()
         val actual = File(formStorageFilePath(fileName = STORAGE_FILE_NAME)).readLines()
@@ -99,7 +103,7 @@ class FileStorageTest {
     @Test
     fun `when writing value and reference - they are written correctly`() {
         fileStorage.saveChunkByValue(chunk = Chunk(value = "lol".toByteArray().toList()))
-        fileStorage.saveChunkByReference(reference = Reference(id = 5, pageId = "kek.txt", segmentPosition = 0))
+        fileStorage.saveChunkByReference(reference = Reference(id = "5", pageId = "kek.txt", segmentPosition = 0))
         fileStorage.saveChunkByValue(chunk = Chunk(value = "kek".toByteArray().toList()))
 
         val expected = File(EXPECTED_VALUE_AND_REFERENCE_FILE_PATH).readLines()

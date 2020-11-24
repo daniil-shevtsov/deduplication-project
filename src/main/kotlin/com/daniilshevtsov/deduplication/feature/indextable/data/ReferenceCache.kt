@@ -7,9 +7,9 @@ import javax.inject.Inject
 @ApplicationScope
 class ReferenceCache @Inject constructor() {
 
-    private var references: MutableMap<Int, Reference> = mutableMapOf()
+    private var references: MutableMap<String, Reference> = mutableMapOf()
 
-    fun checkContains(hash: Int) = references.containsKey(key = hash)
+    fun checkContains(hash: String) = references.containsKey(key = hash)
 
     fun saveReference(reference: Reference) {
         references[reference.id] = reference

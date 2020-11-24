@@ -6,6 +6,6 @@ class LoadReferenceUseCase @Inject constructor(
     private val indexTableRepository: IndexTableRepository
 ) {
 
-    operator fun invoke(key: Int) = indexTableRepository.get(key = key)
+    operator fun invoke(key: String) = indexTableRepository.get(key = key)
 
 }

@@ -55,15 +55,17 @@ class DataStore @Inject constructor(
         }
     }
 
-    override fun findReferenceByHash(hash: Int): ReferenceEntity? = transaction {
+    override fun findReferenceByHash(hash: String): ReferenceEntity? = transaction {
         ReferenceExposedEntity.find {
             ReferenceTable.segmentHash eq hash
         }.singleOrNull()?.toEntity()
     }
 
 
-    override fun getReference(id: Int): ReferenceEntity? = transaction {
-        ReferenceExposedEntity.findById(id)?.toEntity()
+    override fun getReference(id: String): ReferenceEntity? = transaction {
+        ReferenceExposedEntity.find {
+            ReferenceTable.segmentHash eq id
+        }.singleOrNull()?.toEntity()
     }
 
     private fun ReferenceExposedEntity.toEntity() = ReferenceEntity(

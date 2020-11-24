@@ -5,8 +5,8 @@ interface DataStoreApi {
 
     fun saveReference(reference: ReferenceEntity)
 
-    fun findReferenceByHash(hash: Int): ReferenceEntity?
+    fun findReferenceByHash(hash: String): ReferenceEntity?
 
-    fun getReference(id: Int): ReferenceEntity?
+    fun getReference(id: String): ReferenceEntity?
 
 }

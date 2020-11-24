@@ -74,7 +74,7 @@ class DeduplicationAppTest {
         val WAR_INPUT_PATH: String = getResourcePath("test_app_source_war_input.txt")
         val WAR_EXPECTED_OUTPUT_PATH: String = getResourcePath("test_app_source_war_expected_output.txt")
 
-        const val ACTUAL_OUTPUT_PATH = "test_output.txt"
+        const val ACTUAL_OUTPUT_PATH = "output/test_output.txt"
 
         private fun getResourcePath(fileName: String) =
             Paths.get(DeduplicationAppTest::class.java.getResource(fileName).toURI()).toString()
