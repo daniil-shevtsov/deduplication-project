@@ -10,6 +10,7 @@ class ParseConsoleArgumentsUseCase @Inject constructor() {
         return when (val key = rawArguments.first()) {
             in STORE_KEY_WORD -> parseStoreArguments(rawArguments.drop(1))
             in READ_KEY_WORD -> parseReadArguments(rawArguments.drop(1))
+            in COUNT_KEY_WORD -> parseCountErrorsArguments(rawArguments.drop(1))
             in CLEAN_KEY_WORD -> parseCleanArguments()
             else -> throw IllegalArgumentException("unknown key argument: $key")
         }
@@ -32,12 +33,22 @@ class ParseConsoleArgumentsUseCase @Inject constructor() {
         )
     }
 
+    private fun parseCountErrorsArguments(rawArguments: List<String>): ConsoleArguments.CountErrors {
+        require(rawArguments.size == READ_ARGUMENTS_COUNT) { "Counting errors requires two arguments: source file name and output file name" }
+
+        return ConsoleArguments.CountErrors(
+            sourceFileName = rawArguments.first(),
+            outputFileName = rawArguments[1]
+        )
+    }
+
     private fun parseCleanArguments(): ConsoleArguments = ConsoleArguments.Clean
 
     private companion object {
-        val CLEAN_KEY_WORD = listOf("-c", "--clean")
         val STORE_KEY_WORD = listOf("-s", "--store")
         val READ_KEY_WORD = listOf("-r", "--read")
+        val COUNT_KEY_WORD = listOf("--count")
+        val CLEAN_KEY_WORD = listOf("-c", "--clean")
 
         const val STORE_ARGUMENTS_COUNT = 1
         const val READ_ARGUMENTS_COUNT = 2

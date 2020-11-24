@@ -4,7 +4,6 @@ import com.daniilshevtsov.deduplication.feature.output.PrepareOutputUseCase
 import com.daniilshevtsov.deduplication.feature.storage.domain.GetResultingChunkUseCase
 import com.daniilshevtsov.deduplication.feature.storage.domain.GetStorageAsSequenceUseCase
 import mu.KLogger
-import java.io.File
 import javax.inject.Inject
 
 class LoadFromStorageAndWriteUseCase @Inject constructor(
@@ -29,13 +28,5 @@ class LoadFromStorageAndWriteUseCase @Inject constructor(
             }
             flush()
         }
-
-        val sourceBytes = File("source/source_raven.txt").readBytes()
-        val outputBytes = File("output/source_raven.txt").readBytes()
-        val differentCount = sourceBytes.zip(outputBytes)
-            .filter { it.first != it.second }
-            .count()
-        val percent = differentCount.toDouble() / (sourceBytes.size.toDouble() * 0.01)
-        println("error: $percent %")
     }
 }

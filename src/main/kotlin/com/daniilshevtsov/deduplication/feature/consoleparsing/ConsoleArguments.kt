@@ -9,6 +9,11 @@ sealed class ConsoleArguments {
         val outputFileName: String
     ) : ConsoleArguments()
 
+    data class CountErrors(
+        val sourceFileName: String,
+        val outputFileName: String
+    ) : ConsoleArguments()
+
     object Clean : ConsoleArguments()
 
 }

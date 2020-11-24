@@ -3,6 +3,7 @@ package com.daniilshevtsov.deduplication
 import com.daniilshevtsov.deduplication.feature.consoleparsing.ConsoleArguments
 import com.daniilshevtsov.deduplication.feature.consoleparsing.ParseConsoleArgumentsUseCase
 import com.daniilshevtsov.deduplication.feature.main.CleanFilesUseCase
+import com.daniilshevtsov.deduplication.feature.main.CountErrorsUseCase
 import com.daniilshevtsov.deduplication.feature.main.LoadFromStorageAndWriteUseCase
 import com.daniilshevtsov.deduplication.feature.main.ReadAndStoreUseCase
 import mu.KLogger
@@ -12,6 +13,7 @@ class Deduplicator @Inject constructor(
     private val parseConsoleArguments: ParseConsoleArgumentsUseCase,
     private val readAndStore: ReadAndStoreUseCase,
     private val loadFromStorageAndWrite: LoadFromStorageAndWriteUseCase,
+    private val countErrors: CountErrorsUseCase,
     private val cleanFiles: CleanFilesUseCase,
     private val logger: KLogger
 ) {
@@ -26,6 +28,10 @@ class Deduplicator @Inject constructor(
         when (parsedArguments) {
             is ConsoleArguments.Store -> readAndStore(sourceFileName = parsedArguments.sourceFileName)
             is ConsoleArguments.Read -> loadFromStorageAndWrite(
+                sourceFileName = parsedArguments.sourceFileName,
+                outputFileName = parsedArguments.outputFileName
+            )
+            is ConsoleArguments.CountErrors -> countErrors(
                 sourceFileName = parsedArguments.sourceFileName,
                 outputFileName = parsedArguments.outputFileName
             )
