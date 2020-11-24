@@ -36,6 +36,23 @@ class FileStorageTest {
     }
 
     @Test
+    fun `test writing difficult characters`() {
+        val storage = formStorageFilePath(fileName = STORAGE_FILE_NAME)
+        fileStorage = FileStorage(
+            appConfig = createAppConfig(
+                storageDirectoryName = STORAGE_DIRECTORY_NAME,
+                storageFileName = STORAGE_FILE_NAME
+            )
+        )
+        fileStorage.setCurrentPageId(pageId = STORAGE_FILE_NAME)
+        fileStorage.saveChunkByValue(chunk = Chunk(value = "‘".toByteArray(Charsets.UTF_8).toList()))
+
+        val expected = File(EXPECTED_HARD).readLines()
+        val actual = File(storage).readLines()
+        actual shouldBe expected
+    }
+
+    @Test
     fun `when using absolute and relative paths together - everything works correctly`() {
         val storage = formStorageFilePath(fileName = STORAGE_FILE_NAME)
         fileStorage = FileStorage(
@@ -97,6 +114,7 @@ class FileStorageTest {
             FileStorageTest::class.java.getResource("file_storage_expected_reference.txt").path
         private val EXPECTED_VALUE_AND_REFERENCE_FILE_PATH =
             FileStorageTest::class.java.getResource("file_storage_expected_value_and_reference.txt").path
+        private val EXPECTED_HARD = FileStorageTest::class.java.getResource("file_storage_expected_hard.txt").path
 
         private const val STORAGE_FILE_NAME = "test_storage.txt"
         private const val STORAGE_DIRECTORY_NAME = "test_storage"

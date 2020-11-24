@@ -1,5 +1,9 @@
 /*.db
-**/*.txt
+
+/source
+/storage
+/output
+
 _Store
 .idea/shelf
 /android.tests.dependencies
