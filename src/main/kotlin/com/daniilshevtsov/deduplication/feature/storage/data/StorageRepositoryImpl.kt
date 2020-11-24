@@ -11,8 +11,6 @@ class StorageRepositoryImpl @Inject constructor(
     private val storageApi: StorageApi
 ) : StorageRepository {
 
-//    private val storage = mutableListOf<SavedData>()
-
     override fun saveChunk(chunk: Chunk): Reference {
         return storageApi.saveChunkByValue(chunk = chunk)
     }
@@ -25,18 +23,7 @@ class StorageRepositoryImpl @Inject constructor(
         storageApi.saveChunkByReference(reference = reference)
     }
 
-    override fun readAsSequence(pageId:String): Sequence<SavedData> = storageApi.readAsSequence(pageId).map { line ->
-        when {
-            line.startsWith("reference:") -> {
-                SavedData.TableReference(referenceId = line.substringAfter("reference:").toInt())
-            }
-            line.startsWith("value:") -> {
-                SavedData.Value(chunk = Chunk(value = line.substringAfter("value:").toByteArray().toList()))
-            }
-            else -> throw IllegalStateException("line >$line< is not a value nor a reference")
-        }
-
-    }
+    override fun readAsSequence(pageId:String): Sequence<SavedData> = storageApi.readAsSequence(pageId)
 
     override fun setCurrentPageId(pageId: String) {
         storageApi.setCurrentPageId(pageId)

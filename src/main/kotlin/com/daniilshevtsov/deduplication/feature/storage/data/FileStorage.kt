@@ -73,7 +73,7 @@ class FileStorage @Inject constructor(
     override fun saveChunkByReference(reference: Reference) {
         RandomAccessFile(storagePath, "rw").apply {
             seek(length())
-            write("reference:".toByteArray())
+            write(REFERENCE_PREFIX.toByteArray())
             write(reference.id.toString().toByteArray())
             write("\n".toByteArray())
 
@@ -81,10 +81,20 @@ class FileStorage @Inject constructor(
         }
     }
 
-    override fun readAsSequence(pageId: String): Sequence<String> {
-        return File(getFullPath(fileName = pageId)).bufferedReader().lineSequence().map {
-            it.replace(LINE_BREAK_STAND_IN, LINE_BREAK)
-                .replace(CARRIAGE_RETURN_STAND_IN, CARRIAGE_RETURN)
+    override fun readAsSequence(pageId: String): Sequence<SavedData> {
+        return File(getFullPath(fileName = pageId)).bufferedReader().lineSequence().map { line ->
+            when {
+                line.startsWith(REFERENCE_PREFIX) -> {
+                    SavedData.TableReference(referenceId = line.substringAfter(REFERENCE_PREFIX).toInt())
+                }
+                line.startsWith(VALUE_PREFIX) -> {
+                    val entry = line.substringAfter(VALUE_PREFIX)
+                        .replace(LINE_BREAK_STAND_IN, LINE_BREAK)
+                        .replace(CARRIAGE_RETURN_STAND_IN, CARRIAGE_RETURN)
+                    SavedData.Value(chunk = Chunk(value = entry.toByteArray().toList()))
+                }
+                else -> throw IllegalStateException("line >$line< is not a value nor a reference")
+            }
         }
     }
 
@@ -96,8 +106,8 @@ class FileStorage @Inject constructor(
     }
 
     private companion object {
-        const val VALUE_PREFIX = "value:"
-        const val REFERENCE_PREFIX = "reference:"
+        const val VALUE_PREFIX = "v"
+        const val REFERENCE_PREFIX = "r"
 
         const val LINE_BREAK = '\n'
         const val CARRIAGE_RETURN = '\r'

@@ -10,10 +10,12 @@ class CountErrorsUseCase @Inject constructor() {
     ) {
         val sourceBytes = File(sourceFileName).readBytes()
         val outputBytes = File(outputFileName).readBytes()
+
         val differentCount = sourceBytes.zip(outputBytes)
             .filter { it.first != it.second }
             .count()
-        val percent = differentCount.toDouble() / (sourceBytes.size.toDouble() * 0.01)
+
+        val percent = differentCount / (sourceBytes.size * 0.01)
         println("error: ${String.format("%.2f", percent)} %")
     }
 }

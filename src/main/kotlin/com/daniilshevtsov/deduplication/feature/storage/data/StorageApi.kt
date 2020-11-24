@@ -13,6 +13,6 @@ interface StorageApi {
 
     fun saveChunkByReference(reference: Reference)
 
-    fun readAsSequence(pageId:String): Sequence<String>
+    fun readAsSequence(pageId:String): Sequence<SavedData>
 
 }
