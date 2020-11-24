@@ -9,5 +9,7 @@ fun main(args: Array<String>) {
     val executionDuration = measureTime {
         app.start(args = args)
     }
+
     println("execution time: ${executionDuration.inSeconds} seconds")
+
 }

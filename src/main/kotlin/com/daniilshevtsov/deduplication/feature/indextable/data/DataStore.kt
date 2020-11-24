@@ -2,13 +2,13 @@ package com.daniilshevtsov.deduplication.feature.indextable.data
 
 import com.daniilshevtsov.deduplication.ReferenceTable
 import com.daniilshevtsov.deduplication.di.scope.ApplicationScope
+import com.zaxxer.hikari.HikariDataSource
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.sqlite.SQLiteConfig
 import java.sql.Connection
 import javax.inject.Inject
 
@@ -22,18 +22,17 @@ class DataStore @Inject constructor(
     }
 
     private fun setupDatabase() {
-        val db = Database.connect(
-            url = "jdbc:sqlite:./data.db",
-            driver = "org.sqlite.JDBC",
-            setupConnection = {
-                SQLiteConfig().apply {
-                    setSharedCache(true)
-                    setJournalMode(SQLiteConfig.JournalMode.WAL)
-                    busyTimeout = 5000
-                    apply(it)
-                }
-            }
-        )
+        val dataSource = HikariDataSource().apply {
+            jdbcUrl = "jdbc:sqlite:./data.db"
+            dataSourceClassName = "org.sqlite.SQLiteDataSource"
+
+            maximumPoolSize = 3
+            transactionIsolation = "TRANSACTION_SERIALIZABLE"
+            validate()
+        }
+
+        Database.connect(dataSource)
+
         TransactionManager.manager.defaultIsolationLevel = Connection.TRANSACTION_SERIALIZABLE
 
         transaction {

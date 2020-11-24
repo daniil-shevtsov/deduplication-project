@@ -32,6 +32,9 @@ fun DependencyHandlerScope.database(
     sqliteVersion: String,
     exposedVersion: String
 ) {
+    implementation("com.zaxxer:HikariCP:3.4.5")
+
+
     implementation("org.xerial:sqlite-jdbc:$sqliteVersion")
 
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
