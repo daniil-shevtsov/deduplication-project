@@ -5,5 +5,8 @@ import java.io.OutputStream
 import javax.inject.Inject
 
 class PrepareOutputUseCase @Inject constructor() {
-    operator fun invoke(fileName: String): OutputStream = File(fileName).outputStream().buffered()
+    operator fun invoke(fileName: String): OutputStream {
+        File("output").mkdirs()
+        return File(fileName).outputStream().buffered()
+    }
 }
