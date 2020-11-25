@@ -29,6 +29,5 @@ class ReadAndStoreUseCase @Inject constructor(
                 handleChunk(chunk)
             }
         }
-        saveReferences()
     }
 }
