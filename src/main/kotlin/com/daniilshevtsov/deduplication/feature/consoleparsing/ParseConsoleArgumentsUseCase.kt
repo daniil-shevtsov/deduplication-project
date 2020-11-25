@@ -5,15 +5,52 @@ import javax.inject.Inject
 class ParseConsoleArgumentsUseCase @Inject constructor() {
 
     operator fun invoke(rawArguments: Array<String>): ConsoleArguments {
-        require(rawArguments.size == ARGUMENTS_COUNT) { "Two console arguments required: input and output file names" }
+        require(rawArguments.isNotEmpty()) { "Requires one key: $STORE_KEY_WORD for storing, $READ_KEY_WORD for reading or $CLEAN_KEY_WORD to clean" }
 
-        return ConsoleArguments(
+        return when (val key = rawArguments.first()) {
+            in STORE_KEY_WORD -> parseStoreArguments(rawArguments.drop(1))
+            in READ_KEY_WORD -> parseReadArguments(rawArguments.drop(1))
+            in COUNT_KEY_WORD -> parseCountErrorsArguments(rawArguments.drop(1))
+            in CLEAN_KEY_WORD -> parseCleanArguments()
+            else -> throw IllegalArgumentException("unknown key argument: $key")
+        }
+    }
+
+    private fun parseStoreArguments(rawArguments: List<String>): ConsoleArguments.Store {
+        require(rawArguments.size == STORE_ARGUMENTS_COUNT) { "Storing requires one argument: input file name" }
+
+        return ConsoleArguments.Store(
+            sourceFileName = rawArguments.first()
+        )
+    }
+
+    private fun parseReadArguments(rawArguments: List<String>): ConsoleArguments.Read {
+        require(rawArguments.size == READ_ARGUMENTS_COUNT) { "Reading requires two arguments: source file name and output file name" }
+
+        return ConsoleArguments.Read(
             sourceFileName = rawArguments.first(),
             outputFileName = rawArguments[1]
         )
     }
 
+    private fun parseCountErrorsArguments(rawArguments: List<String>): ConsoleArguments.CountErrors {
+        require(rawArguments.size == READ_ARGUMENTS_COUNT) { "Counting errors requires two arguments: source file name and output file name" }
+
+        return ConsoleArguments.CountErrors(
+            sourceFileName = rawArguments.first(),
+            outputFileName = rawArguments[1]
+        )
+    }
+
+    private fun parseCleanArguments(): ConsoleArguments = ConsoleArguments.Clean
+
     private companion object {
-        const val ARGUMENTS_COUNT = 2
+        val STORE_KEY_WORD = listOf("-s", "--store")
+        val READ_KEY_WORD = listOf("-r", "--read")
+        val COUNT_KEY_WORD = listOf("--count")
+        val CLEAN_KEY_WORD = listOf("-c", "--clean")
+
+        const val STORE_ARGUMENTS_COUNT = 1
+        const val READ_ARGUMENTS_COUNT = 2
     }
 }

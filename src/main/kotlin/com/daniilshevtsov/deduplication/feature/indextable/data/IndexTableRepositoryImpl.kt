@@ -7,20 +7,36 @@ import javax.inject.Inject
 
 @ApplicationScope
 class IndexTableRepositoryImpl @Inject constructor(
-
+    private val referenceCache: ReferenceCache,
+    private val dataStoreApi: DataStoreApi
 ) : IndexTableRepository {
 
-    private val indexTable = mutableMapOf<Int, Reference>()
+    override fun checkContains(key: String): Boolean =
+        dataStoreApi.findReferenceByHash(hash = key) != null
 
-    override fun checkContains(key: Int): Boolean {
-        return indexTable.containsKey(key)
+    //TODO: Fill segment count correctly
+    override fun saveAll(references: List<Reference>) {
+        dataStoreApi.saveReferences(references = references.map { reference -> reference.toEntity() })
     }
 
-    override fun save(key: Int, reference: Reference) {
-        indexTable[key] = reference
+    override fun saveReference(reference: Reference) {
+        dataStoreApi.saveReference(reference = reference.toEntity())
     }
 
-    override fun get(key: Int): Reference? {
-        return indexTable[key]
+    override fun get(key: String): Reference? {
+        return dataStoreApi.findReferenceByHash(hash = key)?.let { referenceEntity ->
+            Reference(
+                id = referenceEntity.segmentHash,
+                pageId = referenceEntity.fileName,
+                segmentPosition = referenceEntity.segmentPosition
+            )
+        }
     }
+
+    private fun Reference.toEntity() = ReferenceEntity(
+        segmentHash = id,
+        fileName = pageId,
+        segmentPosition = segmentPosition,
+        segmentCount = 0
+    )
 }

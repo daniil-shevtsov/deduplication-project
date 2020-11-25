@@ -2,12 +2,13 @@ import com.daniilshevtsov.deduplication.appDependencies
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.3.50"
-    kotlin("kapt") version "1.3.50"
+    kotlin("jvm") version "1.3.72"
+    kotlin("kapt") version "1.3.72"
 }
 
 repositories {
     mavenCentral()
+    maven(url = "https://dl.bintray.com/kotlin/exposed/")
 }
 
 tasks.withType<Test> {

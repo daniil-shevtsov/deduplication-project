@@ -1,16 +1,17 @@
-package com.daniilshevtsov.deduplication.feature.input
+package com.daniilshevtsov.deduplication.feature.input.domain
 
 import com.daniilshevtsov.deduplication.feature.core.AppConfig
 import com.daniilshevtsov.deduplication.feature.core.Chunk
 import java.io.InputStream
 import javax.inject.Inject
 
-class ReadSegmentsUseCase @Inject constructor(
+class SplitToChunksUseCase @Inject constructor(
     private val appConfig: AppConfig
 ) {
 
-    operator fun invoke(inputStream: InputStream): Sequence<Chunk> =
-        inputStream.chunkedSequence(chunkSize = appConfig.chunkSize)
+    //TODO: Find out why sequence swallows errors and just hangs tests
+    operator fun invoke(inputStream: InputStream) =
+        inputStream.chunkedSequence(chunkSize = appConfig.chunkSize).toList()
 
     private fun InputStream.chunkedSequence(chunkSize: Int): Sequence<Chunk> {
         val buffer = ByteArray(chunkSize)

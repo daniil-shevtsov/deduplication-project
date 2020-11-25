@@ -1,4 +1,10 @@
-/*.txt
+/*.db
+
+/source
+/storage
+/test_storage
+/output
+
 _Store
 .idea/shelf
 /android.tests.dependencies

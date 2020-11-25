@@ -1,3 +1,7 @@
 package com.daniilshevtsov.deduplication.feature.core
 
-inline class Reference(val index: Int)
+data class Reference(
+    val id: String,
+    val pageId: String,
+    val segmentPosition: Long
+)

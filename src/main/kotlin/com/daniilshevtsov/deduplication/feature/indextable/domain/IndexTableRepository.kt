@@ -4,10 +4,12 @@ import com.daniilshevtsov.deduplication.feature.core.Reference
 
 interface IndexTableRepository {
 
-    fun checkContains(key: Int): Boolean
+    fun checkContains(key: String): Boolean
 
-    fun save(key: Int, reference: Reference)
+    fun saveAll(references: List<Reference>)
 
-    fun get(key: Int): Reference?
+    fun saveReference(reference: Reference)
+
+    fun get(key: String): Reference?
 
 }

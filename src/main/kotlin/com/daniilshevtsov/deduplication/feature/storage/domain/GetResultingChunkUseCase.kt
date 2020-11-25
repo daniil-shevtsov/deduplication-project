@@ -5,10 +5,10 @@ import com.daniilshevtsov.deduplication.feature.storage.data.SavedData
 import javax.inject.Inject
 
 class GetResultingChunkUseCase @Inject constructor(
-    private val storageRepository: StorageRepository
+    private val getChunkByReference: GetChunkByReferenceUseCase
 ) {
     operator fun invoke(savedData: SavedData): Chunk = when (savedData) {
         is SavedData.Value -> savedData.chunk
-        is SavedData.TableReference -> storageRepository.getByReference(reference = savedData.reference)
+        is SavedData.TableReference -> getChunkByReference(referenceId = savedData.referenceId)
     }
 }
